@@ -10,16 +10,7 @@ import numpy as np
 import time
 from utils import cpu_and_system_props, gpu_props, dict_to_str, Logger, experiment_hash_str
 import sys
-from sfwf import (
-    sfwf_contraction_cpu_numpy,
-    sfwf_contraction_cuda_small,
-    sfwf_contraction_cuda_large_atomicmax,
-    sfwf_contraction_cuda_large_atomicmax_globalmem,
-    sfwf_contraction_cuda_large_gridreducemax,
-    sfwf_contraction_cuda_large_gridsync,
-    sfwf_mc_cpu_numpy,
-    sfwf_mc_cuda
-)
+import sfwf
 from numba.core.errors import NumbaPerformanceWarning
 import warnings
 warnings.simplefilter("ignore", category=NumbaPerformanceWarning)
@@ -30,22 +21,27 @@ from pprint import pprint
 # global settings                
 FOLDER_EXPERIMENTS = "../experiments/"
 FOLDER_EXTRAS = "../extras/"
+DEFAULT_REPETITIONS = 3
 
 # experiment settings    
 SEED = 7 # seeds nice for plots (and experiments): 6, 7, 15
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 1000
+WF_BORDER_N = 317
 CONTRACTION_EPS = 1e-4
 MC_SEED_CPU_NUMPY = 0
 MC_SEED_CUDA = 0
 MC_SAMPLES = 10**5 
-APPROACH_CONTRACTION_CPU_NUMPY = True
-APPROACH_CONTRACTION_CUDA_SMALL = False
-APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX = True
-APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX_GLOBALMEM = True
-APPROACH_CONTRACTION_CUDA_LARGE_GRIDREDUCE = True
-APPROACH_CONTRACTION_CUDA_LARGE_GRIDSYNC = False
+
+# approaches for contraction iteration (values in this dictionary are: flag on / off, function name, repetitions, dictionary with extra arguments) 
+APPROACHES_CONTRACTION = { 
+    "CPU_NUMPY": (True, sfwf.sfwf_contraction_cpu_numpy, 1, {}), 
+    "CUDA_SMALL": (True, sfwf.sfwf_contraction_cuda_small, DEFAULT_REPETITIONS, {"tpb": sfwf.DEFAULT_TPB}),
+    "CUDA_LARGE_ATOMICMAX": (True, sfwf.sfwf_contraction_cuda_large_atomicmax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
+    "CUDA_LARGE_ATOMICMAX_GLOBALMEM": (True, sfwf.sfwf_contraction_cuda_large_atomicmax_globalmem, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
+    "CUDA_LARGE_GRIDREDUCEMAX": (True, sfwf.sfwf_contraction_cuda_large_gridreducemax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB}),
+    "CUDA_LARGE_GRIDSYNC": (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
+    }
 APPROACH_MC_CPU_NUMPY = False
 APPROACH_MC_CUDA = False    
         
@@ -91,13 +87,8 @@ if __name__ == "__main__":
         "CONTRACTION_EPS": CONTRACTION_EPS,
         "MC_SEED_CPU_NUMPY": MC_SEED_CPU_NUMPY,
         "MC_SEED_CUDA": MC_SEED_CUDA,
-        "MC_SAMPLES": MC_SAMPLES,  
-        "APPROACH_CONTRACTION_CPU_NUMPY": APPROACH_CONTRACTION_CPU_NUMPY,
-        "APPROACH_CONTRACTION_CUDA_SMALL": APPROACH_CONTRACTION_CUDA_SMALL,
-        "APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX": APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX,
-        "APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX_GLOBALMEM": APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX_GLOBALMEM,
-        "APPROACH_CONTRACTION_CUDA_LARGE_GRIDREDUCE": APPROACH_CONTRACTION_CUDA_LARGE_GRIDREDUCE,
-        "APPROACH_CONTRACTION_CUDA_LARGE_GRIDSYNC": APPROACH_CONTRACTION_CUDA_LARGE_GRIDSYNC,
+        "MC_SAMPLES": MC_SAMPLES,
+        **APPROACHES_CONTRACTION,
         "APPROACH_MC_CPU_NUMPY": APPROACH_MC_CPU_NUMPY,
         "APPROACH_MC_CUDA": APPROACH_MC_CUDA                    
         }        
@@ -127,117 +118,50 @@ if __name__ == "__main__":
     print(line_separator)
 
     border, heights_in = random_wire_frame(WF_FOURIER_N, WF_FOURIER_AMPLITUDE, WF_BORDER_N, seed=SEED)
-    print(f"RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): {WF_BORDER_N**2}")    
+    print(f"RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): {WF_BORDER_N**2}")
+    if VERBOSE_HEIGHTS:
+        print(f"HEIGHTS IN[:5, :5]:\n{heights_in[:5, :5]}")        
     if PLOTS:
-        sfwf_plot(border, heights_in, "WIRE FRAME (INPUT)")
-    
-    if APPROACH_CONTRACTION_CPU_NUMPY:
-        print("---")
-        heights_out, d, k, time_ = sfwf_contraction_cpu_numpy(heights_in, CONTRACTION_EPS, verbose=True)
-        if heights_out_ref is not None:
-            d_vs_ref = np.max(np.abs(heights_out - heights_out_ref))
-            print(f"D_INF VS HEIGHTS REF: {d_vs_ref}")
-            print(f"SPEEDUP VS TIME REF: {time_ref / time_}")
-        else:
-            heights_out_ref = heights_out  
-            time_ref = time_
-        if VERBOSE_HEIGHTS:
-            print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
-        if PLOTS: 
-            method_name = sfwf_contraction_cpu_numpy.__name__
-            title = f"SHAPE COMPUTED BY: {method_name}"
-            subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}]"            
-            sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)
-                
-    if APPROACH_CONTRACTION_CUDA_SMALL and BORDER_N <= DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE:
-        print("---")
-        heights_out, d, k, time_ = sfwf_contraction_cuda_small(heights_in, CONTRACTION_EPS)
-        if VERBOSE_HEIGHTS:
-            print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
-        if heights_out_ref is not None:
-            d_vs_ref = np.max(np.abs(heights_out - heights_out_ref))
-            print(f"D_INF VS HEIGHTS REF: {d_vs_ref}")
-            print(f"SPEEDUP VS TIME REF: {time_ref / time_}")
-        else:
-            heights_out_ref = heights_out  
-            time_ref = time_
-        if PLOTS:
-            method_name = sfwf_contraction_cuda_small.__name__ 
-            title = f"SHAPE COMPUTED BY: {method_name}"
-            subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}]"            
-            sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)
-
-    if APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX:
-        print("---")
-        heights_out, d, k, time_ = sfwf_contraction_cuda_large_atomicmax(heights_in, CONTRACTION_EPS)
-        if VERBOSE_HEIGHTS:
-            print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
-        if heights_out_ref is not None:
-            d_vs_ref = np.max(np.abs(heights_out - heights_out_ref))
-            print(f"D_INF VS HEIGHTS REF: {d_vs_ref}")
-            print(f"SPEEDUP VS TIME REF: {time_ref / time_}")
-        else:
-            heights_out_ref = heights_out  
-            time_ref = time_            
-        if PLOTS:
-            method_name = sfwf_contraction_cuda_large_atomicmax.__name__  
-            title = f"SHAPE COMPUTED BY: {method_name}"
-            subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}]"
-            sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)
-    
-    if APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX_GLOBALMEM:
-        print("---")
-        heights_out, d, k, time_ = sfwf_contraction_cuda_large_atomicmax_globalmem(heights_in, CONTRACTION_EPS) 
-        if VERBOSE_HEIGHTS:
-            print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
-        if heights_out_ref is not None:
-            d_vs_ref = np.max(np.abs(heights_out - heights_out_ref))
-            print(f"D_INF VS HEIGHTS REF: {d_vs_ref}")
-            print(f"SPEEDUP VS TIME REF: {time_ref / time_}")
-        else:
-            heights_out_ref = heights_out  
-            time_ref = time_            
-        if PLOTS:
-            method_name = sfwf_contraction_cuda_large_atomicmax_globalmem.__name__  
-            title = f"SHAPE COMPUTED BY: {method_name}"
-            subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}]"
-            sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)
-
-    if APPROACH_CONTRACTION_CUDA_LARGE_GRIDREDUCE:
-        print("---")
-        heights_out, d, k, time_ = sfwf_contraction_cuda_large_gridreducemax(heights_in, CONTRACTION_EPS)
-        if VERBOSE_HEIGHTS:
-            print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")            
-        if heights_out_ref is not None:
-            d_vs_ref = np.max(np.abs(heights_out - heights_out_ref))
-            print(f"D_INF VS HEIGHTS REF: {d_vs_ref}")
-            print(f"SPEEDUP VS TIME REF: {time_ref / time_}")
-        else:
-            heights_out_ref = heights_out  
-            time_ref = time_            
-        if PLOTS:
-            method_name = sfwf_contraction_cuda_large_gridreducemax.__name__  
-            title = f"SHAPE COMPUTED BY: {method_name}"
-            subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}]"
-            sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)  
-
-    if APPROACH_CONTRACTION_CUDA_LARGE_GRIDSYNC:
-        print("---")
-        heights_out, d, k, time_ = sfwf_contraction_cuda_large_gridsync(heights_in, CONTRACTION_EPS)
-        if VERBOSE_HEIGHTS:
-            print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
-        if heights_out_ref is not None:
-            d_vs_ref = np.max(np.abs(heights_out - heights_out_ref))
-            print(f"D_INF VS HEIGHTS REF: {d_vs_ref}")
-            print(f"SPEEDUP VS TIME REF: {time_ref / time_}")
-        else:
-            heights_out_ref = heights_out  
-            time_ref = time_            
-        if PLOTS: 
-            method_name = sfwf_contraction_cuda_large_gridsync.__name__  
-            title = f"SHAPE COMPUTED BY: {method_name}"
-            subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}, time: {time_:.3f} s]"
-            sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)
+        sfwf_plot(border, heights_in, "WIRE FRAME (INPUT)")        
+        
+    ref_approach_name = None
+    ref_heights_out = None
+    ref_time_mean = None
+    times = {}
+    for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_CONTRACTION.items()):
+        if approach_on:
+            print(line_separator)
+            print(f"CONTRACTION APPROACH {index + 1}: {approach_name}...", flush=True)
+            if approach_name == "CUDA_SMALL" and WF_BORDER_N > sfwf.DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE:
+                print("[skipping this approach (too large WF_BORDER_N)]")
+                continue                 
+            for r in range(approach_repetitions):
+                print("---")               
+                print(f"REPETITION: {r + 1}/{approach_repetitions}:")
+                heights_out, d, k, time_ = approach_function(heights_in, eps=CONTRACTION_EPS, **approach_extra_params)
+                if approach_name not in times:
+                    times[approach_name] = []
+                times[approach_name].append(time_)            
+            time_mean = np.mean(times[approach_name])
+            time_std = np.std(times[approach_name])            
+            if ref_approach_name is None:
+                ref_approach_name = approach_name
+                ref_heights_out = heights_out
+                ref_time_mean = time_mean                            
+            d_vs_ref = np.max(np.abs(heights_out - ref_heights_out))
+            speedup_vs_ref = ref_time_mean / time_mean
+            print("***")
+            print("SUMMARY:")
+            print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")            
+            print(f"D_INF OF HEIGHTS VS REF: {d_vs_ref}")            
+            print(f"SPEEDUP VS REF: {speedup_vs_ref}")
+            if VERBOSE_HEIGHTS:
+                print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")            
+            if PLOTS: 
+                method_name = approach_function.__name__
+                title = f"SHAPE COMPUTED BY: {method_name}"
+                subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}]"            
+                sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)                                                                                                 
 
     if APPROACH_MC_CPU_NUMPY:
         print("---") 

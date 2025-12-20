@@ -12,14 +12,15 @@ os.environ["NUMBA_DISABLE_PERFORMANCE_WARNINGS"] = "1"
 
 DEFAULT_TPB = cuda.get_current_device().MAX_THREADS_PER_BLOCK // 2
 DEFAULT_TPB_SIDE = 16 
+DEFAULT_LAZY_STOP_CHECK = 100
 DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE = 64
 DEFAULT_CONTRACTION_CUDA_LARGE_GRIDSYNC_MAX_BPG = 100
 DEFAULT_MC_CUDA_TPB = 64
 DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE = 250 # 10**3 (250 for nice plot)
 DEFAULT_MC_CPU_NUMPY_VERBOSE_GAP = 10**4
 DEFAULT_MC_CUDA_RPT = 10 # repetitions (walks) per thread (owing to this, fewer random generators can be initialized and CUDA blocks scheduled)                 
-        
-def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=False):
+                         
+def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
     if verbose:
         print(f"SFWF CONTRACTION CPU NUMPY... [eps: {eps}]")
     t1 = time.time()
@@ -44,8 +45,9 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=False):
         print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")
     return heights_out, d, k, t2 - t1
 
-def sfwf_contraction_cuda_small(heights_in, eps, tpb=DEFAULT_TPB):
-    print(f"SFWF CONTRACTION CUDA SMALL... [eps: {eps}, tpb: {tpb}]")
+def sfwf_contraction_cuda_small(heights_in, eps, tpb, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA SMALL... [eps: {eps}, tpb: {tpb}]")
     t1 = time.time()
     dev_h_in = cuda.to_device(heights_in)
     dev_h_out = cuda.device_array_like(heights_in)
@@ -56,8 +58,9 @@ def sfwf_contraction_cuda_small(heights_in, eps, tpb=DEFAULT_TPB):
     d = dev_d.copy_to_host()[0]
     k = dev_k.copy_to_host()[0]
     cuda.synchronize()
-    t2 = time.time()    
-    print(f"SFWF CONTRACTION CUDA SMALL DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+    t2 = time.time()
+    if verbose:    
+        print(f"SFWF CONTRACTION CUDA SMALL DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
 @cuda.jit(void(float32[:, :], float32, float32[:, :], float32[:], int32[:]))    
@@ -131,8 +134,9 @@ def sfwf_contraction_cuda_small_job(h_in, eps, h_out, d, k):
         d[0] = shared_d[0, 0]
         k[0] = k_
 
-def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=100, tpb_side=DEFAULT_TPB_SIDE):
-    print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}]")
+def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_MC_CUDA_TPB, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}]")
     t1 = time.time()
     dev_h_in = cuda.to_device(heights_in)
     dev_h_out = cuda.device_array_like(heights_in)
@@ -142,7 +146,8 @@ def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=100, 
     bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
     bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side      
     bpg = (bpg_i, bpg_j)
-    print(f"[bpg: {bpg}]")
+    if verbose:
+        print(f"[bpg: {bpg}]")
     k = 0
     while True:
         sfwf_contraction_cuda_large_atomicmax_reset[1, 1](dev_d)
@@ -159,7 +164,8 @@ def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=100, 
     heights_out = dev_h_out.copy_to_host()
     d = d[0]    
     t2 = time.time()
-    print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
 @cuda.jit(void(float32[:]))    
@@ -205,8 +211,9 @@ def sfwf_contraction_cuda_large_atomicmax_job(h_in, h_out, d):
     if t == 0:
         cuda.atomic.max(d, 0, shared_d[0])
         
-def sfwf_contraction_cuda_large_atomicmax_globalmem(heights_in, eps, lazy_stop_check=100, tpb_side=DEFAULT_TPB_SIDE):
-    print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX GLOBAL MEM... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}]")
+def sfwf_contraction_cuda_large_atomicmax_globalmem(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX GLOBAL MEM... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}]")
     t1 = time.time()
     dev_h_in = cuda.to_device(heights_in)
     dev_h_out = cuda.device_array_like(heights_in)
@@ -216,7 +223,8 @@ def sfwf_contraction_cuda_large_atomicmax_globalmem(heights_in, eps, lazy_stop_c
     bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
     bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side      
     bpg = (bpg_i, bpg_j)
-    print(f"[bpg: {bpg}]")
+    if verbose:
+        print(f"[bpg: {bpg}]")
     k = 0
     while True:
         sfwf_contraction_cuda_large_atomicmax_globalmem_reset[1, 1](dev_d)
@@ -233,7 +241,8 @@ def sfwf_contraction_cuda_large_atomicmax_globalmem(heights_in, eps, lazy_stop_c
     heights_out = dev_h_out.copy_to_host()
     d = d[0]    
     t2 = time.time()
-    print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX GLOBALMEM DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX GLOBALMEM DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
 @cuda.jit(void(float32[:]))    
@@ -267,8 +276,9 @@ def sfwf_contraction_cuda_large_atomicmax_globalmem_job(h_in, h_out, d):
     if t == 0:
         cuda.atomic.max(d, 0, shared_d[0])
 
-def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=100, tpb_side=DEFAULT_TPB_SIDE, tpb_reduce=DEFAULT_TPB):
-    print(f"SFWF CONTRACTION CUDA LARGE GRIDREDUCEMAX... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}, tpb_reduce: {tpb_reduce}]")
+def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, tpb_reduce=DEFAULT_TPB, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE GRIDREDUCEMAX... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}, tpb_reduce: {tpb_reduce}]")
     t1 = time.time()
     dev_h_in = cuda.to_device(heights_in)
     dev_h_out = cuda.device_array_like(heights_in)
@@ -277,8 +287,9 @@ def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=1
     bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side      
     bpg = (bpg_i, bpg_j)
     d = np.zeros(bpg_i * bpg_j, dtype=np.float32)
-    dev_d = cuda.to_device(d)       
-    print(f"[bpg: {bpg}]")
+    dev_d = cuda.to_device(d)
+    if verbose:       
+        print(f"[bpg: {bpg}]")
     k = 0
     while True:
         sfwf_contraction_cuda_large_gridreducemax_reset[1, 1](dev_d)
@@ -296,7 +307,8 @@ def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=1
     heights_out = dev_h_out.copy_to_host()
     d = d[0]    
     t2 = time.time()
-    print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDREDUCEMAX DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+    if verbose:
+        print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDREDUCEMAX DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
 @cuda.jit(void(float32[:]))    
@@ -367,21 +379,24 @@ def sfwf_contraction_cuda_large_gridreducemax_reduce(d):
     if t == 0:    
         d[0] = shared_d[0]
 
-def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_SIDE, max_bpg_gridsync=DEFAULT_CONTRACTION_CUDA_LARGE_GRIDSYNC_MAX_BPG, discover_max_bpg_gridsync=True):
-    print(f"SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: {eps}, tpb_side: {tpb_side}, assumed max_bpg_gridsync: {max_bpg_gridsync}, discover_max_bpg_gridsync: {discover_max_bpg_gridsync}]")
+def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_SIDE, max_bpg_gridsync=None, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: {eps}, tpb_side: {tpb_side}, assumed max_bpg_gridsync: {max_bpg_gridsync}]")
     t1 = time.time()
     dev_h_in = cuda.to_device(heights_in)
     dev_h_out = cuda.device_array_like(heights_in)
     tpb = (tpb_side, tpb_side)
     bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
     bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side
-    print(f"[wanted ideal bpg: {(bpg_i, bpg_j)}]")
-    if discover_max_bpg_gridsync:
+    if verbose:
+        print(f"[wanted ideal bpg: {(bpg_i, bpg_j)}]")
+    if max_bpg_gridsync is None:
         t1_discover = time.time()
         compiled = sfwf_contraction_cuda_large_gridsync_job.overloads[(float32[:, :], float32, float32[:, :], float32[:], int32[:], boolean[:],)]
         max_bpg_gridsync = compiled.max_cooperative_grid_blocks(tpb)
         t2_discover = time.time()
-        print(f"[discovered max_bpg_gridsync: {max_bpg_gridsync}; time: {t2_discover - t1_discover} s]")
+        if verbose:
+            print(f"[discovered max_bpg_gridsync: {max_bpg_gridsync}; time: {t2_discover - t1_discover} s]")
     ratio = min(np.sqrt(max_bpg_gridsync / (bpg_i * bpg_j)), 1.0)
     bpg_i = max(int(np.ceil(ratio * bpg_i)), 1)
     bpg_j = max(int(np.ceil(ratio * bpg_j)), 1)
@@ -405,7 +420,8 @@ def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_S
     k = dev_k.copy_to_host()[0]
     cuda.synchronize()
     t2 = time.time()
-    print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+    if verbose:
+        print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1        
 
 @cuda.jit(void(float32[:, :], float32, float32[:, :], float32[:], int32[:], boolean[:]))    
@@ -472,8 +488,9 @@ def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):
         if stop_all[0]:
             break
 
-def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE, verbose=False, verbose_gap=DEFAULT_MC_CPU_NUMPY_VERBOSE_GAP, collect_trajectories=False):
-    print(f"SFWF MC CPU NUMPY... [(i, j): {(i, j)}, n_samples: {n_samples:.1e}, chunk_size: {chunk_size}, seed: {seed}]")
+def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE, verbose=True, verbose_gap=DEFAULT_MC_CPU_NUMPY_VERBOSE_GAP, collect_trajectories=False):
+    if verbose:
+        print(f"SFWF MC CPU NUMPY... [(i, j): {(i, j)}, n_samples: {n_samples:.1e}, chunk_size: {chunk_size}, seed: {seed}]")
     t1 = time.time()
     if seed is None:
         seed = 0
@@ -514,22 +531,26 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
     t2 = time.time()
     h_mean = np.mean(Gs)
     T_mean = np.mean(Ts)
-    print(f"SFWF MC CPU NUMPY DONE. [h_mean: {h_mean}, T_mean: {T_mean}; time: {t2 - t1} s]")
+    if verbose:
+        print(f"SFWF MC CPU NUMPY DONE. [h_mean: {h_mean}, T_mean: {T_mean}; time: {t2 - t1} s]")
     return h_mean, T_mean, trajectories
 
-def sfwf_mc_cuda(heights, i, j, n_samples, rpt, seed=None, tpb=DEFAULT_MC_CUDA_TPB):
-    print(f"SFWF MC CUDA... [(i, j): {(i, j)}, wanted n_samples: {n_samples:.1e}, seed: {seed}]")
+def sfwf_mc_cuda(heights, i, j, n_samples, rpt, seed=None, tpb=DEFAULT_MC_CUDA_TPB, verbose=True):
+    if verbose:
+        print(f"SFWF MC CUDA... [(i, j): {(i, j)}, wanted n_samples: {n_samples:.1e}, seed: {seed}]")
     t1 = time.time()
     if seed is None:
         seed = 0
     min_n_generators = (n_samples + rpt - 1) // rpt
     bpg_walk = (min_n_generators + tpb - 1) // tpb
-    print(f"[min_n_generators: {min_n_generators}, bpg_walk: {bpg_walk}, tpb: {tpb}]")
-    print("[initialization of random generators...]")
+    if verbose:
+        print(f"[min_n_generators: {min_n_generators}, bpg_walk: {bpg_walk}, tpb: {tpb}]")
+        print("[initialization of random generators...]")
     t1_generators = time.time()
     dev_random_generators = create_xoroshiro128p_states(bpg_walk * tpb, seed=seed)
     t2_generators = time.time()
-    print(f"[initialization of random generators done; count: {bpg_walk * tpb}, memory: {dev_random_generators.nbytes / 1024**2:.3f} MB, time: {t2_generators - t1_generators} s]")        
+    if verbose:
+        print(f"[initialization of random generators done; count: {bpg_walk * tpb}, memory: {dev_random_generators.nbytes / 1024**2:.3f} MB, time: {t2_generators - t1_generators} s]")        
     dev_h = cuda.to_device(heights)    
     dev_G_means = cuda.device_array(bpg_walk, dtype=np.float32)
     dev_T_means = cuda.device_array(bpg_walk, dtype=np.float32)
@@ -539,16 +560,19 @@ def sfwf_mc_cuda(heights, i, j, n_samples, rpt, seed=None, tpb=DEFAULT_MC_CUDA_T
     sfwf_mc_cuda_walk[bpg_walk, tpb](dev_h, i, j, dev_random_generators, rpt, dev_G_means, dev_T_means)
     cuda.synchronize()
     t2_walk = time.time()
-    print(f"[random walks done; time: {t2_walk - t1_walk} s]")    
+    if verbose:
+        print(f"[random walks done; time: {t2_walk - t1_walk} s]")    
     t1_red = time.time()
     sfwf_mc_cuda_reduce[1, tpb](dev_G_means, dev_T_means, bpg_walk, dev_G_mean, dev_T_mean)    
     h_mean = dev_G_mean.copy_to_host()[0]
     T_mean = dev_T_mean.copy_to_host()[0]
     cuda.synchronize()
     t2_red = time.time()
-    print(f"[global reduction done; time: {t2_red - t1_red} s]")
+    if verbose:
+        print(f"[global reduction done; time: {t2_red - t1_red} s]")
     t2 = time.time()
-    print(f"SFWF MC CUDA DONE. [h_mean: {h_mean}, T_mean: {T_mean}, n_samples_defacto: {bpg_walk * tpb * rpt:.1e}; time: {t2 - t1} s, time without generators iniitalization: {t2 - t1 - (t2_generators - t1_generators)} s]")
+    if verbose:
+        print(f"SFWF MC CUDA DONE. [h_mean: {h_mean}, T_mean: {T_mean}, n_samples_defacto: {bpg_walk * tpb * rpt:.1e}; time: {t2 - t1} s, time without generators iniitalization: {t2 - t1 - (t2_generators - t1_generators)} s]")
     return h_mean, T_mean
 
 const_actions_host = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]], dtype=np.int8)
