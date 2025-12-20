@@ -77,7 +77,8 @@ def random_wire_frame(fourier_n, fourier_amplitude, border_n, seed=0):
 # --------------------------------------------------------------------------------------------------------------------------------
 # MAIN
 # --------------------------------------------------------------------------------------------------------------------------------
-if __name__ == "__main__":        
+if __name__ == "__main__":
+    approaches_contraction_info = {key:  (APPROACHES_CONTRACTION[key][0], APPROACHES_CONTRACTION[key][1].__name__, APPROACHES_CONTRACTION[key][2], APPROACHES_CONTRACTION[key][3]) for key in APPROACHES_CONTRACTION.keys()}        
     experiment_info = {        
         "SEED": SEED, 
         "WF_FOURIER_N": WF_FOURIER_N,
@@ -88,7 +89,7 @@ if __name__ == "__main__":
         "MC_SEED_CPU_NUMPY": MC_SEED_CPU_NUMPY,
         "MC_SEED_CUDA": MC_SEED_CUDA,
         "MC_SAMPLES": MC_SAMPLES,
-        **APPROACHES_CONTRACTION,
+        **approaches_contraction_info,
         "APPROACH_MC_CPU_NUMPY": APPROACH_MC_CPU_NUMPY,
         "APPROACH_MC_CUDA": APPROACH_MC_CUDA                    
         }        
