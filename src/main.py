@@ -35,7 +35,7 @@ FOLDER_EXTRAS = "../extras/"
 SEED = 7 # seeds nice for plots (and experiments): 6, 7, 15
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 317
+WF_BORDER_N = 1000
 CONTRACTION_EPS = 1e-4
 MC_SEED_CPU_NUMPY = 0
 MC_SEED_CUDA = 0
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     
     if APPROACH_CONTRACTION_CPU_NUMPY:
         print("---")
-        heights_out, d, k, time_ = sfwf_contraction_cpu_numpy(heights_in, CONTRACTION_EPS, verbose=False)
+        heights_out, d, k, time_ = sfwf_contraction_cpu_numpy(heights_in, CONTRACTION_EPS, verbose=True)
         if heights_out_ref is not None:
             d_vs_ref = np.max(np.abs(heights_out - heights_out_ref))
             print(f"D_INF VS HEIGHTS REF: {d_vs_ref}")

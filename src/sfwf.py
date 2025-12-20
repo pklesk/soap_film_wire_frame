@@ -35,8 +35,6 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=False):
         d = np.max(np.abs(h_new - h))
         h = h_new
         k += 1
-        if verbose:
-            print(f"[iteration {k} done; d_inf: {d}]")
         if d <= eps:
             break        
     t2 = time.time()
