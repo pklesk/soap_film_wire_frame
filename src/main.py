@@ -30,7 +30,7 @@ DEFAULT_REPETITIONS = 3
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 64 # 317
+WF_BORDER_N = 317 # 317
 CONTRACTION_EPS = 1e-4
 MC_SEED = 0
 MC_SAMPLES = 10**5  
@@ -41,7 +41,7 @@ APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cuda_large_atomicmax.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
     sfwf.sfwf_contraction_cuda_large_atomicmax_globalmem.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmax_globalmem, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
     sfwf.sfwf_contraction_cuda_large_gridreducemax.__name__: (True, sfwf.sfwf_contraction_cuda_large_gridreducemax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB}),
-    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
+    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (True, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
 APPROACHES_MC = { # approaches for Monte Carlo simulations
     sfwf.sfwf_mc_cpu_numpy.__name__: (False, sfwf.sfwf_mc_cpu_numpy, 1, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
@@ -139,7 +139,7 @@ if __name__ == "__main__":
         if approach_on:
             print(line_separator)
             print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}...", flush=True)
-            if approach_name == "CUDA_SMALL" and WF_BORDER_N > sfwf.DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE:
+            if approach_name == sfwf.sfwf_contraction_cuda_small.__name__ and WF_BORDER_N > sfwf.DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE:
                 print("[skipping this approach (too large WF_BORDER_N)]")
                 continue                 
             for r in range(approach_repetitions):
@@ -179,7 +179,7 @@ if __name__ == "__main__":
         if approach_on:
             print(line_separator)
             print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}...", flush=True)
-            if PLOT_MC and approach_name == "APPROACH_MC_CPU_NUMPY":
+            if PLOT_MC and approach_name == sfwf.sfwf_mc_cpu_numpy.__name__:
                 approach_extra_params["collect_trajectories"] = True
                 approach_extra_params["n_samples"] = PLOT_MC_SAMPLES                
                 print(f"[number of Monte Carlo samples reduced (to: {PLOT_MC_SAMPLES}) because the plot is turned on]")
