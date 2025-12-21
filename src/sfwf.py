@@ -501,7 +501,11 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
     np.random.seed(seed)      
     m, n = heights.shape    
     actions = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]], dtype=np.int8)    
-    Gs = np.empty(n_samples, dtype=np.float32)
+    Gs = np.empty(n_samples, dtype=np.float32)    
+    print(f"Gs[0]: {Gs[0]}") # TODO remove later
+    print("Gs[0]: " + str(Gs[0]))
+    print(f"heights[0, 0]: {heights[0, 0]}")
+    print("heights[0, 0]: " + str(heights[0, 0]))
     Ts = np.empty(n_samples, dtype=np.int32)
     trajectories = []
     verbose_gap = int(np.round(verbose_gap_percent * n_samples))
