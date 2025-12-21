@@ -30,11 +30,11 @@ DEFAULT_REPETITIONS = 3
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 317 # 317
+WF_BORDER_N = 64 # 317
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
-MC_SAMPLES = 10**5
+MC_SAMPLES = 10**6
 MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED_CPU_NUMPY = 0
 MC_EXAMPLE_PLOT = False
 MC_EXAMPLE_PLOT_SAMPLES = 3 
@@ -204,7 +204,7 @@ if __name__ == "__main__":
             i0, j0 = approach_extra_params["i"], approach_extra_params["j"]
             print("***")
             print("SUMMARY:")
-            print(f"COMPARISON OF SINGLE HEIGHT VS REF: {contraction_ref_heights_out[i0, j0]=} vs {h_mean=}, ABS DIFF: {np.abs(h_mean - contraction_ref_heights_out[i0, j0]):.7e}]")            
+            print(f"COMPARISON OF SINGLE HEIGHT VS REF: {float(contraction_ref_heights_out[i0, j0])=} vs {float(h_mean)=}, ABS DIFF: {np.abs(h_mean - contraction_ref_heights_out[i0, j0]):.7e}]")            
             print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")                        
             print(f"SPEEDUP VS REF: {speedup_vs_ref}")                                                                
     
