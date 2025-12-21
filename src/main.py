@@ -1,3 +1,6 @@
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl"
+
 import os
 NUMPY_SINGLE_THREAD = True
 if NUMPY_SINGLE_THREAD:
@@ -24,32 +27,32 @@ FOLDER_EXTRAS = "../extras/"
 DEFAULT_REPETITIONS = 3
 
 # experiment settings    
-SEED = 7 # seeds nice for plots (and experiments): 6, 7, 15
+SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 317
+WF_BORDER_N = 64 # 317
 CONTRACTION_EPS = 1e-4
-MC_SEED_CPU_NUMPY = 0
-MC_SEED_CUDA = 0
-MC_SAMPLES = 10**5 
-
-# approaches for contraction iteration (values in this dictionary are: flag on / off, function name, repetitions, dictionary with extra arguments) 
-APPROACHES_CONTRACTION = { 
-    "CPU_NUMPY": (True, sfwf.sfwf_contraction_cpu_numpy, 1, {}), 
-    "CUDA_SMALL": (True, sfwf.sfwf_contraction_cuda_small, DEFAULT_REPETITIONS, {"tpb": sfwf.DEFAULT_TPB}),
-    "CUDA_LARGE_ATOMICMAX": (True, sfwf.sfwf_contraction_cuda_large_atomicmax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
-    "CUDA_LARGE_ATOMICMAX_GLOBALMEM": (True, sfwf.sfwf_contraction_cuda_large_atomicmax_globalmem, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
-    "CUDA_LARGE_GRIDREDUCEMAX": (True, sfwf.sfwf_contraction_cuda_large_gridreducemax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB}),
-    "CUDA_LARGE_GRIDSYNC": (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
+MC_SEED = 0
+MC_SAMPLES = 10**5  
+MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED_CPU_NUMPY = 0 
+APPROACHES_CONTRACTION = { # approaches for contraction iteration
+    sfwf.sfwf_contraction_cpu_numpy.__name__: (True, sfwf.sfwf_contraction_cpu_numpy, 1, {}), 
+    sfwf.sfwf_contraction_cuda_small.__name__: (True, sfwf.sfwf_contraction_cuda_small, DEFAULT_REPETITIONS, {"tpb": sfwf.DEFAULT_TPB}),
+    sfwf.sfwf_contraction_cuda_large_atomicmax.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
+    sfwf.sfwf_contraction_cuda_large_atomicmax_globalmem.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmax_globalmem, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
+    sfwf.sfwf_contraction_cuda_large_gridreducemax.__name__: (True, sfwf.sfwf_contraction_cuda_large_gridreducemax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB}),
+    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
-APPROACH_MC_CPU_NUMPY = False
-APPROACH_MC_CUDA = False    
+APPROACHES_MC = { # approaches for Monte Carlo simulations
+    sfwf.sfwf_mc_cpu_numpy.__name__: (False, sfwf.sfwf_mc_cpu_numpy, 1, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
+    sfwf.sfwf_mc_cuda.__name__: (False, sfwf.sfwf_mc_cuda, DEFAULT_REPETITIONS, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "tpb": sfwf.DEFAULT_MC_CUDA_TPB})
+    }    
         
 # auxiliary settings
 VERBOSE_HEIGHTS = True
 PLOTS = False
 PLOT_MC = False
-I0, J0 = 12, 36 # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED_CPU_NUMPY = 0
+PLOT_MC_SAMPLES = 3
 
 # wire frame related functions
 def fourier_sum(t, a, b):
@@ -74,11 +77,20 @@ def random_wire_frame(fourier_n, fourier_amplitude, border_n, seed=0):
         heights[i, j] = border[k]    
     return border, heights
 
+def approaches_info(approaches):
+    info = {}
+    for key in approaches.keys():
+        if approaches[key][0]:
+            info[key]  = (approaches[key][0], approaches[key][1].__name__, approaches[key][2], approaches[key][3])
+        else:
+            info[key] = (approaches[key][0], approaches[key][1].__name__, 0, {})
+    return info        
+
 # --------------------------------------------------------------------------------------------------------------------------------
 # MAIN
 # --------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    approaches_contraction_info = {key:  (APPROACHES_CONTRACTION[key][0], APPROACHES_CONTRACTION[key][1].__name__, APPROACHES_CONTRACTION[key][2], APPROACHES_CONTRACTION[key][3]) for key in APPROACHES_CONTRACTION.keys()}        
+            
     experiment_info = {        
         "SEED": SEED, 
         "WF_FOURIER_N": WF_FOURIER_N,
@@ -86,27 +98,20 @@ if __name__ == "__main__":
         "WF_BORDER_N":  WF_BORDER_N,
         "NUMPY_SINGLE_THREAD": NUMPY_SINGLE_THREAD,
         "CONTRACTION_EPS": CONTRACTION_EPS,
-        "MC_SEED_CPU_NUMPY": MC_SEED_CPU_NUMPY,
-        "MC_SEED_CUDA": MC_SEED_CUDA,
+        "MC_SEED": MC_SEED,
         "MC_SAMPLES": MC_SAMPLES,
-        **approaches_contraction_info,
-        "APPROACH_MC_CPU_NUMPY": APPROACH_MC_CPU_NUMPY,
-        "APPROACH_MC_CUDA": APPROACH_MC_CUDA                    
-        }        
+        **approaches_info(APPROACHES_CONTRACTION),
+        **approaches_info(APPROACHES_MC)                    
+        }                
     c_props = cpu_and_system_props()
     g_props = gpu_props()
-    experiment_hs = experiment_hash_str(experiment_info, c_props, g_props)
+    experiment_hs = experiment_hash_str(experiment_info, c_props, g_props)                
     
-    heights_out = None
-    heights_out_ref = None
-    time_ref = None            
-
     logger = Logger(f"{FOLDER_EXPERIMENTS}{experiment_hs}.log")    
     sys.stdout = logger
 
     t1_main = time.time()
-    print("SOAP FILM IN A WIRE FRAME...")
-    
+    print("SOAP FILM IN A WIRE FRAME...")    
     line_separator = 196 * "="   
     print(f"HASH STRING: {experiment_hs}")
     print(line_separator)
@@ -124,15 +129,16 @@ if __name__ == "__main__":
         print(f"HEIGHTS IN[:5, :5]:\n{heights_in[:5, :5]}")        
     if PLOTS:
         sfwf_plot(border, heights_in, "WIRE FRAME (INPUT)")        
-        
-    ref_approach_name = None
-    ref_heights_out = None
-    ref_time_mean = None
-    times = {}
+    
+    # about to execute contraction iteration approaches
+    contraction_ref_approach_name = None
+    contraction_ref_heights_out = None
+    contraction_ref_time_mean = None
+    contraction_times = {}
     for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_CONTRACTION.items()):
         if approach_on:
             print(line_separator)
-            print(f"CONTRACTION APPROACH {index + 1}: {approach_name}...", flush=True)
+            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}...", flush=True)
             if approach_name == "CUDA_SMALL" and WF_BORDER_N > sfwf.DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE:
                 print("[skipping this approach (too large WF_BORDER_N)]")
                 continue                 
@@ -140,45 +146,92 @@ if __name__ == "__main__":
                 print("---")               
                 print(f"REPETITION: {r + 1}/{approach_repetitions}:")
                 heights_out, d, k, time_ = approach_function(heights_in, eps=CONTRACTION_EPS, **approach_extra_params)
-                if approach_name not in times:
-                    times[approach_name] = []
-                times[approach_name].append(time_)            
-            time_mean = np.mean(times[approach_name])
-            time_std = np.std(times[approach_name])            
-            if ref_approach_name is None:
-                ref_approach_name = approach_name
-                ref_heights_out = heights_out
-                ref_time_mean = time_mean                            
-            d_vs_ref = np.max(np.abs(heights_out - ref_heights_out))
-            speedup_vs_ref = ref_time_mean / time_mean
+                if approach_name not in contraction_times:
+                    contraction_times[approach_name] = []
+                contraction_times[approach_name].append(time_)            
+            time_mean = np.mean(contraction_times[approach_name])
+            time_std = np.std(contraction_times[approach_name])            
+            if contraction_ref_approach_name is None:
+                contraction_ref_approach_name = approach_name
+                contraction_ref_heights_out = heights_out
+                contraction_ref_time_mean = time_mean                            
+            d_vs_ref = np.max(np.abs(heights_out - contraction_ref_heights_out))
+            speedup_vs_ref = contraction_ref_time_mean / time_mean
             print("***")
             print("SUMMARY:")
-            print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")            
-            print(f"D_INF OF HEIGHTS VS REF: {d_vs_ref}")            
-            print(f"SPEEDUP VS REF: {speedup_vs_ref}")
             if VERBOSE_HEIGHTS:
-                print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")            
+                print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
+            print(f"D_INF OF HEIGHTS VS REF: {d_vs_ref}")                    
+            print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")                        
+            print(f"SPEEDUP VS REF: {speedup_vs_ref}")            
             if PLOTS: 
                 method_name = approach_function.__name__
                 title = f"SHAPE COMPUTED BY: {method_name}"
                 subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}]"            
-                sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)                                                                                                 
-
-    if APPROACH_MC_CPU_NUMPY:
-        print("---") 
-        MC_SAMPLES = 3 # changing to small sample size for plot purposes
-        h_mean, T_mean, trajectories = sfwf_mc_cpu_numpy(heights_in, I0, J0, MC_SAMPLES, seed=MC_CPU_NUMPY_SEED, verbose=True, collect_trajectories=True)
-        print(f"SINGLE HEIGHT COMPARISON: {heights_out_ref[i0, j0]=} vs {h_mean=}, ABS DIFF: {np.abs(h_mean - heights_out_ref[i0, j0]):.3e}]")
-        if PLOT_MC:
-            sfwf_plot_mc_trajectories(heights_in, trajectories, h_mean)
-        
-    if APPROACH_MC_CUDA:
-        print("---")
-        rpt = DEFAULT_MC_CUDA_RPT
-        h_mean, T_mean = sfwf_mc_cuda(heights_in, I0, J0, MC_SAMPLES, rpt, seed=SEED)
-        print(f"SINGLE HEIGHT COMPARISON: {heights_out_ref[i0, j0]=} vs {h_mean=}, ABS DIFF: {np.abs(h_mean - heights_out_ref[i0, j0]):.3e}]")
-        
-    t2_main = time.time()
+                sfwf_plot_large(border, heights_in, "WIRE FRAME (INPUT)", "", heights_out, title, subtitle)                                                                                                     
+    
+    # about to execute Monte Carlo approaches
+    mc_ref_approach_name = None
+    mc_ref_h_mean = None
+    mc_ref_time_mean = None
+    mc_times = {}    
+    for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_MC.items()):
+        if approach_on:
+            print(line_separator)
+            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}...", flush=True)
+            if PLOT_MC and approach_name == "APPROACH_MC_CPU_NUMPY":
+                approach_extra_params["collect_trajectories"] = True
+                approach_extra_params["n_samples"] = PLOT_MC_SAMPLES                
+                print(f"[number of Monte Carlo samples reduced (to: {PLOT_MC_SAMPLES}) because the plot is turned on]")
+            i0, j0 = approach_extra_params["i"], approach_extra_params["j"]               
+            for r in range(approach_repetitions):
+                print("---")               
+                print(f"REPETITION: {r + 1}/{approach_repetitions}:")
+                h_mean, T_mean, time_, trajectories = approach_function(heights_in, **approach_extra_params)
+                if approach_name not in mc_times:
+                    mc_times[approach_name] = []
+                mc_times[approach_name].append(time_)                        
+            time_mean = np.mean(mc_times[approach_name])
+            time_std = np.std(mc_times[approach_name])            
+            if mc_ref_approach_name is None:
+                mc_ref_approach_name = approach_name
+                mc_ref_h_mean = h_mean
+                mc_ref_time_mean = time_mean                                                            
+            time_mean = np.mean(mc_times[approach_name])
+            time_std = np.std(mc_times[approach_name])   
+            d_vs_ref = np.abs(h_mean - mc_ref_h_mean)
+            speedup_vs_ref = mc_ref_time_mean / time_mean
+            print("***")
+            print("SUMMARY:")
+            print(f"COMPARISON OF SINGLE HEIGHT VS REF: {contraction_ref_heights_out[i0, j0]=} vs {h_mean=}, ABS DIFF: {np.abs(h_mean - contraction_ref_heights_out[i0, j0]):.7e}]")            
+            print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")                        
+            print(f"SPEEDUP VS REF: {speedup_vs_ref}")                                        
+            if PLOT_MC and approach_name == "APPROACH_MC_CPU_NUMPY":
+                sfwf_plot_mc_trajectories(heights_in, trajectories, h_mean)        
+    
+    print(line_separator)
+    print(line_separator)
+    print("FINAL SUMMARY:")
+    for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_CONTRACTION.items()):
+        if approach_on:
+            reference_info = " (REFERENCE)" if approach_name == contraction_ref_approach_name else ""
+            time_mean = np.mean(contraction_times[approach_name])
+            time_std = np.std(contraction_times[approach_name])
+            speedup = contraction_ref_time_mean / time_mean 
+            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean}, STD: {time_std}, SPEED-UP: {speedup:.2f}", flush=True)
+        else:
+            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{approach_function.__name__} OFF.")
+    for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_MC.items()):
+        if approach_on:
+            reference_info = " (REFERENCE)" if approach_name == mc_ref_approach_name else ""
+            time_mean = np.mean(mc_times[approach_name])
+            time_std = np.std(mc_times[approach_name])
+            speedup = mc_ref_time_mean / time_mean 
+            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean}, STD: {time_std}, SPEED-UP: {speedup:.2f}", flush=True)
+        else:
+            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name} OFF.")
+    
+    t2_main = time.time()    
     print(f"SOAP FILM IN A WIRE FRAME DONE [time: {t2_main - t1_main}].")
     sys.stdout = sys.__stdout__
     logger.logfile.close()    

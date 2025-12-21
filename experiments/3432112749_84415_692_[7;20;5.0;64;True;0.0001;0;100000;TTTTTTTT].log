@@ -1,0 +1,132 @@
+SOAP FILM IN A WIRE FRAME...
+HASH STRING: 3432112749_84415_692_[7;20;5.0;64;True;0.0001;0;100000;TTTTTTTT]
+====================================================================================================================================================================================================
+EXPERIMENT INFO:
+{
+  SEED: 7,
+  WF_FOURIER_N: 20,
+  WF_FOURIER_AMPLITUDE: 5.0,
+  WF_BORDER_N: 64,
+  NUMPY_SINGLE_THREAD: True,
+  CONTRACTION_EPS: 0.0001,
+  MC_SEED: 0,
+  MC_SAMPLES: 100000,
+  APPROACH_CONTRACTION_CPU_NUMPY: (True, 'sfwf_contraction_cpu_numpy', 1, {}),
+  APPROACH_CONTRACTION_CUDA_SMALL: (True, 'sfwf_contraction_cuda_small', 3, {'tpb': 512}),
+  APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX: (True, 'sfwf_contraction_cuda_large_atomicmax', 3, {'lazy_stop_check': 100, 'tpb_side': 16}),
+  APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX_GLOBALMEM: (False, 'sfwf_contraction_cuda_large_atomicmax_globalmem', 0, {}),
+  APPROACH_CONTRACTION_CUDA_LARGE_GRIDREDUCEMAX: (False, 'sfwf_contraction_cuda_large_gridreducemax', 0, {}),
+  APPROACH_CONTRACTION_CUDA_LARGE_GRIDSYNC: (False, 'sfwf_contraction_cuda_large_gridsync', 0, {}),
+  APPROACH_MC_CPU_NUMPY: (True, 'sfwf_mc_cpu_numpy', 1, {'i': 12, 'j': 36, 'samples': 100000, 'seed': 0, 'chunk_size': 250}),
+  APPROACH_MC_CUDA: (True, 'sfwf_mc_cuda', 3, {'i': 12, 'j': 36, 'samples': 100000, 'seed': 0, 'tpb': 64})
+}
+====================================================================================================================================================================================================
+CPU AND SYSTEM:
+{'cpu_name': 'Intel(R) Xeon(R) CPU E3-1505M v5 @ 2.80GHz',
+ 'os_machine': 'AMD64',
+ 'os_name': 'Windows 10',
+ 'os_version': '10.0.19045',
+ 'ram_size': '63.9 GB'}
+GPU:
+{'async_engine_count': 5,
+ 'can_map_host_memory': 1,
+ 'compute_capability': (5, 2),
+ 'cores_per_SM': 128,
+ 'cores_total': 1280,
+ 'max_block_dim_x': 1024,
+ 'max_block_dim_y': 1024,
+ 'max_block_dim_z': 64,
+ 'max_grid_dim_x': 2147483647,
+ 'max_grid_dim_y': 65535,
+ 'max_grid_dim_z': 65535,
+ 'max_shared_memory_per_block': 49152,
+ 'max_threads_per_block': 1024,
+ 'multiprocessor_count': 10,
+ 'name': 'Quadro M4000M',
+ 'pci_bus_id': 1,
+ 'pci_device_id': 0,
+ 'unified_addressing': 1,
+ 'warp_size': 32}
+====================================================================================================================================================================================================
+RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): 4096
+HEIGHTS IN[:5, :5]:
+[[25.365894  20.296429  14.925921  10.320204   7.3313727]
+ [29.068245   0.         0.         0.         0.       ]
+ [30.553246   0.         0.         0.         0.       ]
+ [29.360521   0.         0.         0.         0.       ]
+ [25.516117   0.         0.         0.         0.       ]]
+====================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 1: APPROACH_CONTRACTION_CPU_NUMPY...
+---
+REPETITION: 1/1:
+SFWF CONTRACTION CPU NUMPY... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMPY DONE. [d_inf: 9.918212890625e-05, iterations: 4113, time: 0.609370231628418 s]
+***
+SUMMARY:
+TIME MEAN: 0.609370231628418 s, STD: 0.0 s
+D_INF OF HEIGHTS VS REF: 0.0
+SPEEDUP VS REF: 1.0
+HEIGHTS OUT[:5, :5]:
+[[25.365894  20.296429  14.925921  10.320204   7.3313727]
+ [29.068245  22.564072  17.283554  13.201903  10.526151 ]
+ [30.553246  23.608059  18.44232   14.677709  12.188996 ]
+ [29.360521  22.8726    18.199963  14.877619  12.656763 ]
+ [25.516117  20.32186   16.607319  13.9760475 12.190479 ]]
+====================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 2: APPROACH_CONTRACTION_CUDA_SMALL...
+---
+REPETITION: 1/3:
+SFWF CONTRACTION CUDA SMALL... [eps: 0.0001, tpb: 512]
+SFWF CONTRACTION CUDA SMALL DONE. [d_inf: 9.918212890625e-05, iterations: 4113, time: 0.12466144561767578 s]
+---
+REPETITION: 2/3:
+SFWF CONTRACTION CUDA SMALL... [eps: 0.0001, tpb: 512]
+SFWF CONTRACTION CUDA SMALL DONE. [d_inf: 9.918212890625e-05, iterations: 4113, time: 0.123687744140625 s]
+---
+REPETITION: 3/3:
+SFWF CONTRACTION CUDA SMALL... [eps: 0.0001, tpb: 512]
+SFWF CONTRACTION CUDA SMALL DONE. [d_inf: 9.918212890625e-05, iterations: 4113, time: 0.12365102767944336 s]
+***
+SUMMARY:
+TIME MEAN: 0.12400007247924805 s, STD: 0.0004679015892298572 s
+D_INF OF HEIGHTS VS REF: 0.0
+SPEEDUP VS REF: 4.914273189077359
+HEIGHTS OUT[:5, :5]:
+[[25.365894  20.296429  14.925921  10.320204   7.3313727]
+ [29.068245  22.564072  17.283554  13.201903  10.526151 ]
+ [30.553246  23.608059  18.44232   14.677709  12.188996 ]
+ [29.360521  22.8726    18.199963  14.877619  12.656763 ]
+ [25.516117  20.32186   16.607319  13.9760475 12.190479 ]]
+====================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 3: APPROACH_CONTRACTION_CUDA_LARGE_ATOMICMAX...
+---
+REPETITION: 1/3:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 8.96453857421875e-05, iterations: 4200, time: 0.5495390892028809 s]
+---
+REPETITION: 2/3:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 8.96453857421875e-05, iterations: 4200, time: 0.5674862861633301 s]
+---
+REPETITION: 3/3:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 8.96453857421875e-05, iterations: 4200, time: 0.5754489898681641 s]
+***
+SUMMARY:
+TIME MEAN: 0.5641581217447916 s, STD: 0.010836304625926977 s
+D_INF OF HEIGHTS VS REF: 0.008157730102539062
+SPEEDUP VS REF: 1.0801408472925946
+HEIGHTS OUT[:5, :5]:
+[[25.365894  20.296429  14.925921  10.320204   7.3313727]
+ [29.068245  22.56409   17.283594  13.201963  10.526232 ]
+ [30.553246  23.608099  18.4424    14.67783   12.189158 ]
+ [29.360521  22.87266   18.200085  14.877799  12.657004 ]
+ [25.516117  20.321941  16.607481  13.976289  12.190799 ]]
+====================================================================================================================================================================================================
+====================================================================================================================================================================================================
+MONTE CARLO APPROACH 1: APPROACH_MC_CPU_NUMPY...
+---
+REPETITION: 1/1:

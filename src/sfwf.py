@@ -1,3 +1,6 @@
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl"
+
 import numpy as np
 import time
 from numba import cuda
@@ -292,7 +295,7 @@ def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=D
         print(f"[bpg: {bpg}]")
     k = 0
     while True:
-        sfwf_contraction_cuda_large_gridreducemax_reset[1, 1](dev_d)
+        #sfwf_contraction_cuda_large_gridreducemax_reset[1, 1](dev_d)
         sfwf_contraction_cuda_large_gridreducemax_job[bpg, tpb_job](dev_h_in, dev_h_out, dev_d)
         sfwf_contraction_cuda_large_gridreducemax_reduce[1, tpb_reduce](dev_d)
         k += 1
@@ -533,9 +536,9 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
     T_mean = np.mean(Ts)
     if verbose:
         print(f"SFWF MC CPU NUMPY DONE. [h_mean: {h_mean}, T_mean: {T_mean}; time: {t2 - t1} s]")
-    return h_mean, T_mean, trajectories
+    return h_mean, T_mean, t2 - t1, trajectories
 
-def sfwf_mc_cuda(heights, i, j, n_samples, rpt, seed=None, tpb=DEFAULT_MC_CUDA_TPB, verbose=True):
+def sfwf_mc_cuda(heights, i, j, n_samples, rpt=DEFAULT_MC_CUDA_RPT, seed=None, tpb=DEFAULT_MC_CUDA_TPB, verbose=True):
     if verbose:
         print(f"SFWF MC CUDA... [(i, j): {(i, j)}, wanted n_samples: {n_samples:.1e}, seed: {seed}]")
     t1 = time.time()
@@ -550,7 +553,7 @@ def sfwf_mc_cuda(heights, i, j, n_samples, rpt, seed=None, tpb=DEFAULT_MC_CUDA_T
     dev_random_generators = create_xoroshiro128p_states(bpg_walk * tpb, seed=seed)
     t2_generators = time.time()
     if verbose:
-        print(f"[initialization of random generators done; count: {bpg_walk * tpb}, memory: {dev_random_generators.nbytes / 1024**2:.3f} MB, time: {t2_generators - t1_generators} s]")        
+        print(f"[initialization of random generators done; count: {bpg_walk * tpb}, memory: {dev_random_generators.nbytes / 1024**2:.3f} MiB, time: {t2_generators - t1_generators} s]")        
     dev_h = cuda.to_device(heights)    
     dev_G_means = cuda.device_array(bpg_walk, dtype=np.float32)
     dev_T_means = cuda.device_array(bpg_walk, dtype=np.float32)
@@ -573,7 +576,7 @@ def sfwf_mc_cuda(heights, i, j, n_samples, rpt, seed=None, tpb=DEFAULT_MC_CUDA_T
     t2 = time.time()
     if verbose:
         print(f"SFWF MC CUDA DONE. [h_mean: {h_mean}, T_mean: {T_mean}, n_samples_defacto: {bpg_walk * tpb * rpt:.1e}; time: {t2 - t1} s, time without generators iniitalization: {t2 - t1 - (t2_generators - t1_generators)} s]")
-    return h_mean, T_mean
+    return h_mean, T_mean, t2 - t1, None # trajectories not memorized (hence returned)
 
 const_actions_host = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]], dtype=np.int8)
 @cuda.jit(void(float32[:, :], int32, int32, xoroshiro128p_type[:], int32, float32[:], float32[:]))    
