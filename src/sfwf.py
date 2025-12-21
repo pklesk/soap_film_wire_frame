@@ -532,6 +532,7 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
                     trajectory = np.r_[trajectory, sn]            
         t2_epi = time.time()
         if verbose and (k + 1) % verbose_gap == 0:
+            print(f"[{k + 1}/{n_samples}: border reached at t: {Ts[k]}, (i, j): {(int(i_T), int(j_T))}, h: {float(np.float32(Gs[k]))}; trajectory time: {t2_epi - t1_epi} s]")
             print(f"[{k + 1}/{n_samples}: border reached at t: {Ts[k]}, (i, j): {(int(i_T), int(j_T))}, h: {Gs[k]}; trajectory time: {t2_epi - t1_epi} s]")    
     t2 = time.time()
     h_mean = np.mean(Gs)
