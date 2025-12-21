@@ -44,7 +44,7 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
     heights_out = np.copy(heights_in)
     heights_out[1:-1, 1:-1] = h
     if verbose:
-        print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")
+        print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
     return heights_out, d, k, t2 - t1
 
 def sfwf_contraction_cuda_small(heights_in, eps, tpb, verbose=True):
@@ -62,7 +62,7 @@ def sfwf_contraction_cuda_small(heights_in, eps, tpb, verbose=True):
     cuda.synchronize()
     t2 = time.time()
     if verbose:    
-        print(f"SFWF CONTRACTION CUDA SMALL DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+        print(f"SFWF CONTRACTION CUDA SMALL DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
 @cuda.jit(void(float32[:, :], float32, float32[:, :], float32[:], int32[:]))    
@@ -167,7 +167,7 @@ def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=DEFAU
     d = d[0]    
     t2 = time.time()
     if verbose:
-        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
 @cuda.jit(void(float32[:]))    
@@ -244,7 +244,7 @@ def sfwf_contraction_cuda_large_atomicmax_globalmem(heights_in, eps, lazy_stop_c
     d = d[0]    
     t2 = time.time()
     if verbose:
-        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX GLOBALMEM DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX GLOBALMEM DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
 @cuda.jit(void(float32[:]))    
@@ -311,7 +311,7 @@ def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=D
     d = d[0]    
     t2 = time.time()
     if verbose:
-        print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDREDUCEMAX DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+        print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDREDUCEMAX DONE. [d_inf: {str(d)} iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
 @cuda.jit(void(float32[:]))     
@@ -425,7 +425,7 @@ def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_S
     cuda.synchronize()
     t2 = time.time()
     if verbose:
-        print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
+        print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1        
 
 @cuda.jit(void(float32[:, :], float32, float32[:, :], float32[:], int32[:], boolean[:]))    
@@ -502,10 +502,6 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
     m, n = heights.shape    
     actions = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]], dtype=np.int8)    
     Gs = np.empty(n_samples, dtype=np.float32)    
-    print(f"Gs[0]: {Gs[0]}") # TODO remove later
-    print("Gs[0]: " + str(Gs[0]))
-    print(f"heights[0, 0]: {heights[0, 0]}")
-    print("heights[0, 0]: " + str(heights[0, 0]))
     Ts = np.empty(n_samples, dtype=np.int32)
     trajectories = []
     verbose_gap = int(np.round(verbose_gap_percent * n_samples))
@@ -536,13 +532,12 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
                     trajectory = np.r_[trajectory, sn]            
         t2_epi = time.time()
         if verbose and (k + 1) % verbose_gap == 0:
-            print(f"[{k + 1}/{n_samples}: border reached at t: {Ts[k]}, (i, j): {(int(i_T), int(j_T))}, h: {float(np.float32(Gs[k]))}; trajectory time: {t2_epi - t1_epi} s]")
-            print(f"[{k + 1}/{n_samples}: border reached at t: {Ts[k]}, (i, j): {(int(i_T), int(j_T))}, h: {Gs[k]}; trajectory time: {t2_epi - t1_epi} s]")    
+            print(f"[{k + 1}/{n_samples}: border reached at t: {Ts[k]}, (i, j): {(int(i_T), int(j_T))}, h: {str(Gs[k])}; trajectory time: {t2_epi - t1_epi} s]")
     t2 = time.time()
     h_mean = np.mean(Gs)
     T_mean = np.mean(Ts)
     if verbose:
-        print(f"SFWF MC CPU NUMPY DONE. [h_mean: {h_mean}, T_mean: {T_mean}; time: {t2 - t1} s]")
+        print(f"SFWF MC CPU NUMPY DONE. [h_mean: {str(h_mean)}, T_mean: {T_mean}; time: {t2 - t1} s]")
     return h_mean, T_mean, t2 - t1, trajectories
 
 def sfwf_mc_cuda(heights, i, j, n_samples, seed=None, rpt=DEFAULT_MC_CUDA_RPT, tpb=DEFAULT_MC_CUDA_TPB, verbose=True):
@@ -588,7 +583,7 @@ def sfwf_mc_cuda(heights, i, j, n_samples, seed=None, rpt=DEFAULT_MC_CUDA_RPT, t
     t2_t1 = t2 - t1
     t2_t1_without_generators = t2_t1 - (t2_generators - t1_generators)
     if verbose:
-        print(f"SFWF MC CUDA DONE. [h_mean: {h_mean}, T_mean: {T_mean}, n_samples de facto: {bpg_walk * tpb * rpt:.1e}; time: {t2 - t1} s, time without generators initalization: {t2_t1_without_generators} s]")
+        print(f"SFWF MC CUDA DONE. [h_mean: {str(h_mean)}, T_mean: {T_mean}, n_samples de facto: {bpg_walk * tpb * rpt:.1e}; time: {t2 - t1} s, time without generators initalization: {t2_t1_without_generators} s]")
     return h_mean, T_mean, t2_t1_without_generators, None # trajectories not memorized (hence returned)
 
 const_actions_host = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]], dtype=np.int8)
