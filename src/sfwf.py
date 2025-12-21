@@ -20,7 +20,6 @@ DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE = 64
 DEFAULT_CONTRACTION_CUDA_LARGE_GRIDSYNC_MAX_BPG = 100
 DEFAULT_MC_CUDA_TPB = 64
 DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE = 250 # 10**3 (250 for nice plot)
-DEFAULT_MC_CPU_NUMPY_VERBOSE_GAP = 10**4
 DEFAULT_MC_CUDA_RPT = 10 # repetitions (walks) per thread (owing to this, fewer random generators can be initialized and CUDA blocks scheduled)                 
                          
 def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
@@ -50,7 +49,7 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
 
 def sfwf_contraction_cuda_small(heights_in, eps, tpb, verbose=True):
     if verbose:
-        print(f"SFWF CONTRACTION CUDA SMALL... [eps: {eps}, tpb: {tpb}]")
+        print(f"SFWF CONTRACTION CUDA SMALL... [eps: {eps}, bpg: 1, tpb: {tpb}]")
     t1 = time.time()
     dev_h_in = cuda.to_device(heights_in)
     dev_h_out = cuda.device_array_like(heights_in)
@@ -150,7 +149,7 @@ def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=DEFAU
     bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side      
     bpg = (bpg_i, bpg_j)
     if verbose:
-        print(f"[bpg: {bpg}]")
+        print(f"[bpg: {bpg}, tpb: {tpb}]")
     k = 0
     while True:
         sfwf_contraction_cuda_large_atomicmax_reset[1, 1](dev_d)
@@ -227,7 +226,7 @@ def sfwf_contraction_cuda_large_atomicmax_globalmem(heights_in, eps, lazy_stop_c
     bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side      
     bpg = (bpg_i, bpg_j)
     if verbose:
-        print(f"[bpg: {bpg}]")
+        print(f"[bpg: {bpg}, tpb: {tpb}]")
     k = 0
     while True:
         sfwf_contraction_cuda_large_atomicmax_globalmem_reset[1, 1](dev_d)
@@ -292,10 +291,11 @@ def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=D
     d = np.zeros(bpg_i * bpg_j, dtype=np.float32)
     dev_d = cuda.to_device(d)
     if verbose:       
-        print(f"[bpg: {bpg}]")
+        print(f"[job bpg: {bpg}, tpb: {tpb_job}]")
+        print(f"[reduce bpg: {1}, tpb: {tpb_reduce}]")
     k = 0
     while True:
-        #sfwf_contraction_cuda_large_gridreducemax_reset[1, 1](dev_d)
+        #sfwf_contraction_cuda_large_gridreducemax_reset[1, 1](dev_d) #TODO
         sfwf_contraction_cuda_large_gridreducemax_job[bpg, tpb_job](dev_h_in, dev_h_out, dev_d)
         sfwf_contraction_cuda_large_gridreducemax_reduce[1, tpb_reduce](dev_d)
         k += 1
@@ -314,9 +314,9 @@ def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=D
         print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDREDUCEMAX DONE. [d_inf: {d}, iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
-@cuda.jit(void(float32[:]))    
-def sfwf_contraction_cuda_large_gridreducemax_reset(d):
-    d[0] = float32(0.0)   
+@cuda.jit(void(float32[:]))     
+def sfwf_contraction_cuda_large_gridreducemax_reset(d): # TODO, probably to remove
+    d[0] = float32(0.0)
 
 @cuda.jit(void(float32[:, :], float32[:, :], float32[:]))    
 def sfwf_contraction_cuda_large_gridreducemax_job(h_in, h_out, d):         
@@ -413,7 +413,8 @@ def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_S
     ept_i = (heights_in.shape[0] + tpg_i - 1) // tpg_i
     ept_j = (heights_in.shape[1] + tpg_j - 1) // tpg_j
     ept = ept_i * ept_j
-    print(f"[bpg: {bpg}, ept: {ept}]")
+    if verbose:
+        print(f"[bpg: {bpg}, tpb: {tpb}, ept: {ept}]")
     dev_d = cuda.to_device(np.zeros(1, dtype=np.float32))
     dev_k = cuda.to_device(np.zeros(1, dtype=np.int32))
     dev_stop_all = cuda.to_device(np.zeros(1, dtype=bool))       
@@ -491,9 +492,9 @@ def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):
         if stop_all[0]:
             break
 
-def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE, verbose=True, verbose_gap=DEFAULT_MC_CPU_NUMPY_VERBOSE_GAP, collect_trajectories=False):
+def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE, verbose=True, verbose_gap_percent=0.1, collect_trajectories=False):
     if verbose:
-        print(f"SFWF MC CPU NUMPY... [(i, j): {(i, j)}, n_samples: {n_samples:.1e}, chunk_size: {chunk_size}, seed: {seed}]")
+        print(f"SFWF MC CPU NUMPY... [(i, j): {(i, j)}, n_samples: {n_samples:.1e}, seed: {seed}, chunk_size: {chunk_size}]")
     t1 = time.time()
     if seed is None:
         seed = 0
@@ -503,6 +504,7 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
     Gs = np.empty(n_samples, dtype=np.float32)
     Ts = np.empty(n_samples, dtype=np.int32)
     trajectories = []
+    verbose_gap = int(np.round(verbose_gap_percent * n_samples))
     for k in range(n_samples):
         t = 0
         s = np.array([i, j], dtype=np.int32)
@@ -530,7 +532,7 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
                     trajectory = np.r_[trajectory, sn]            
         t2_epi = time.time()
         if verbose and (k + 1) % verbose_gap == 0:
-            print(f"[{k + 1}/{n_samples}: border reached at t: {Ts[k]}, (i, j): {(i_T, j_T)}, h: {Gs[k]}; time: {t2_epi - t1_epi} s]")    
+            print(f"[{k + 1}/{n_samples}: border reached at t: {Ts[k]}, (i, j): {(i_T, j_T)}, h: {Gs[k]}; trajectory time: {t2_epi - t1_epi} s]")    
     t2 = time.time()
     h_mean = np.mean(Gs)
     T_mean = np.mean(Ts)
@@ -538,33 +540,37 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
         print(f"SFWF MC CPU NUMPY DONE. [h_mean: {h_mean}, T_mean: {T_mean}; time: {t2 - t1} s]")
     return h_mean, T_mean, t2 - t1, trajectories
 
-def sfwf_mc_cuda(heights, i, j, n_samples, rpt=DEFAULT_MC_CUDA_RPT, seed=None, tpb=DEFAULT_MC_CUDA_TPB, verbose=True):
+def sfwf_mc_cuda(heights, i, j, n_samples, seed=None, rpt=DEFAULT_MC_CUDA_RPT, tpb=DEFAULT_MC_CUDA_TPB, verbose=True):
     if verbose:
-        print(f"SFWF MC CUDA... [(i, j): {(i, j)}, wanted n_samples: {n_samples:.1e}, seed: {seed}]")
+        print(f"SFWF MC CUDA... [(i, j): {(i, j)}, wanted n_samples: {n_samples:.1e}, seed: {seed}, rpt: {rpt}, tpb: {tpb}]")
     t1 = time.time()
     if seed is None:
         seed = 0
     min_n_generators = (n_samples + rpt - 1) // rpt
     bpg_walk = (min_n_generators + tpb - 1) // tpb
     if verbose:
-        print(f"[min_n_generators: {min_n_generators}, bpg_walk: {bpg_walk}, tpb: {tpb}]")
+        print(f"[min_n_generators: {min_n_generators}, bpg_walk: {bpg_walk}]")
         print("[initialization of random generators...]")
     t1_generators = time.time()
     dev_random_generators = create_xoroshiro128p_states(bpg_walk * tpb, seed=seed)
+    cuda.synchronize()
     t2_generators = time.time()
     if verbose:
-        print(f"[initialization of random generators done; count: {bpg_walk * tpb}, memory: {dev_random_generators.nbytes / 1024**2:.3f} MiB, time: {t2_generators - t1_generators} s]")        
+        print(f"[initialization of random generators done; count: {bpg_walk * tpb}, memory: {dev_random_generators.nbytes / 1024**2:.3f} MiB, time: {t2_generators - t1_generators} s]")
+    if verbose:
+        print(f"[random walks...; bpg_walk: {bpg_walk}, tpb: {tpb}]")
+    t1_walk = time.time()        
     dev_h = cuda.to_device(heights)    
     dev_G_means = cuda.device_array(bpg_walk, dtype=np.float32)
     dev_T_means = cuda.device_array(bpg_walk, dtype=np.float32)
     dev_G_mean = cuda.device_array(1, dtype=np.float32)
-    dev_T_mean = cuda.device_array(1, dtype=np.float32)
-    t1_walk = time.time()
+    dev_T_mean = cuda.device_array(1, dtype=np.float32)        
     sfwf_mc_cuda_walk[bpg_walk, tpb](dev_h, i, j, dev_random_generators, rpt, dev_G_means, dev_T_means)
     cuda.synchronize()
     t2_walk = time.time()
     if verbose:
-        print(f"[random walks done; time: {t2_walk - t1_walk} s]")    
+        print(f"[random walks done; time: {t2_walk - t1_walk} s]")
+        print(f"[mean-reduction...; bpg: {1}, tpb: {tpb}]")    
     t1_red = time.time()
     sfwf_mc_cuda_reduce[1, tpb](dev_G_means, dev_T_means, bpg_walk, dev_G_mean, dev_T_mean)    
     h_mean = dev_G_mean.copy_to_host()[0]
@@ -572,11 +578,13 @@ def sfwf_mc_cuda(heights, i, j, n_samples, rpt=DEFAULT_MC_CUDA_RPT, seed=None, t
     cuda.synchronize()
     t2_red = time.time()
     if verbose:
-        print(f"[global reduction done; time: {t2_red - t1_red} s]")
+        print(f"[mean-reduction done; time: {t2_red - t1_red} s]")
     t2 = time.time()
+    t2_t1 = t2 - t1
+    t2_t1_without_generators = t2_t1 - (t2_generators - t1_generators)
     if verbose:
-        print(f"SFWF MC CUDA DONE. [h_mean: {h_mean}, T_mean: {T_mean}, n_samples_defacto: {bpg_walk * tpb * rpt:.1e}; time: {t2 - t1} s, time without generators iniitalization: {t2 - t1 - (t2_generators - t1_generators)} s]")
-    return h_mean, T_mean, t2 - t1, None # trajectories not memorized (hence returned)
+        print(f"SFWF MC CUDA DONE. [h_mean: {h_mean}, T_mean: {T_mean}, n_samples de facto: {bpg_walk * tpb * rpt:.1e}; time: {t2 - t1} s, time without generators initalization: {t2_t1_without_generators} s]")
+    return h_mean, T_mean, t2_t1_without_generators, None # trajectories not memorized (hence returned)
 
 const_actions_host = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]], dtype=np.int8)
 @cuda.jit(void(float32[:, :], int32, int32, xoroshiro128p_type[:], int32, float32[:], float32[:]))    

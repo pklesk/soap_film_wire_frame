@@ -32,9 +32,12 @@ WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
 WF_BORDER_N = 317 # 317
 CONTRACTION_EPS = 1e-4
+CONTRACTION_PLOTS = False
 MC_SEED = 0
-MC_SAMPLES = 10**5  
-MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED_CPU_NUMPY = 0 
+MC_SAMPLES = 10**5
+MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED_CPU_NUMPY = 0
+MC_EXAMPLE_PLOT = False
+MC_EXAMPLE_PLOT_SAMPLES = 3 
 APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cpu_numpy.__name__: (True, sfwf.sfwf_contraction_cpu_numpy, 1, {}), 
     sfwf.sfwf_contraction_cuda_small.__name__: (True, sfwf.sfwf_contraction_cuda_small, DEFAULT_REPETITIONS, {"tpb": sfwf.DEFAULT_TPB}),
@@ -44,15 +47,9 @@ APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (True, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
 APPROACHES_MC = { # approaches for Monte Carlo simulations
-    sfwf.sfwf_mc_cpu_numpy.__name__: (False, sfwf.sfwf_mc_cpu_numpy, 1, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
-    sfwf.sfwf_mc_cuda.__name__: (False, sfwf.sfwf_mc_cuda, DEFAULT_REPETITIONS, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "tpb": sfwf.DEFAULT_MC_CUDA_TPB})
-    }    
-        
-# auxiliary settings
-VERBOSE_HEIGHTS = True
-PLOTS = False
-PLOT_MC = False
-PLOT_MC_SAMPLES = 3
+    sfwf.sfwf_mc_cpu_numpy.__name__: (True, sfwf.sfwf_mc_cpu_numpy, 1, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
+    sfwf.sfwf_mc_cuda.__name__: (True, sfwf.sfwf_mc_cuda, DEFAULT_REPETITIONS, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "rpt": sfwf.DEFAULT_MC_CUDA_RPT, "tpb": sfwf.DEFAULT_MC_CUDA_TPB})
+    }            
 
 # wire frame related functions
 def fourier_sum(t, a, b):
@@ -98,11 +95,14 @@ if __name__ == "__main__":
         "WF_BORDER_N":  WF_BORDER_N,
         "NUMPY_SINGLE_THREAD": NUMPY_SINGLE_THREAD,
         "CONTRACTION_EPS": CONTRACTION_EPS,
+        "CONTRACTION_PLOTS": CONTRACTION_PLOTS,
         "MC_SEED": MC_SEED,
         "MC_SAMPLES": MC_SAMPLES,
+        "MC_EXAMPLE_PLOT": MC_EXAMPLE_PLOT,
+        "MC_EXAMPLE_PLOT_SAMPLES": MC_EXAMPLE_PLOT_SAMPLES,
         **approaches_info(APPROACHES_CONTRACTION),
         **approaches_info(APPROACHES_MC)                    
-        }                
+        }                    
     c_props = cpu_and_system_props()
     g_props = gpu_props()
     experiment_hs = experiment_hash_str(experiment_info, c_props, g_props)                
@@ -125,9 +125,8 @@ if __name__ == "__main__":
 
     border, heights_in = random_wire_frame(WF_FOURIER_N, WF_FOURIER_AMPLITUDE, WF_BORDER_N, seed=SEED)
     print(f"RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): {WF_BORDER_N**2}")
-    if VERBOSE_HEIGHTS:
-        print(f"HEIGHTS IN[:5, :5]:\n{heights_in[:5, :5]}")        
-    if PLOTS:
+    print(f"HEIGHTS IN[:5, :5]:\n{heights_in[:5, :5]}")        
+    if CONTRACTION_PLOTS:
         sfwf_plot(border, heights_in, "WIRE FRAME (INPUT)")        
     
     # about to execute contraction iteration approaches
@@ -159,12 +158,11 @@ if __name__ == "__main__":
             speedup_vs_ref = contraction_ref_time_mean / time_mean
             print("***")
             print("SUMMARY:")
-            if VERBOSE_HEIGHTS:
-                print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
+            print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
             print(f"D_INF OF HEIGHTS VS REF: {d_vs_ref}")                    
             print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")                        
             print(f"SPEEDUP VS REF: {speedup_vs_ref}")            
-            if PLOTS: 
+            if CONTRACTION_PLOTS: 
                 method_name = approach_function.__name__
                 title = f"SHAPE COMPUTED BY: {method_name}"
                 subtitle = f"[$d_{{\\infty}}$: {d:.3e}, iterations: {k}]"            
@@ -179,11 +177,13 @@ if __name__ == "__main__":
         if approach_on:
             print(line_separator)
             print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}...", flush=True)
-            if PLOT_MC and approach_name == sfwf.sfwf_mc_cpu_numpy.__name__:
-                approach_extra_params["collect_trajectories"] = True
-                approach_extra_params["n_samples"] = PLOT_MC_SAMPLES                
-                print(f"[number of Monte Carlo samples reduced (to: {PLOT_MC_SAMPLES}) because the plot is turned on]")
-            i0, j0 = approach_extra_params["i"], approach_extra_params["j"]               
+            if MC_EXAMPLE_PLOT and approach_name == sfwf.sfwf_mc_cpu_numpy.__name__:
+                approach_extra_params_plot = approach_extra_params.copy()
+                approach_extra_params_plot["collect_trajectories"] = True
+                approach_extra_params_plot["n_samples"] = MC_EXAMPLE_PLOT_SAMPLES
+                print(f"[making additional example run and plot for only {MC_EXAMPLE_PLOT_SAMPLES} trajectories]")
+                h_mean, T_mean, time_, trajectories = approach_function(heights_in, **approach_extra_params_plot)                                
+                sfwf_plot_mc_trajectories(heights_in, trajectories, h_mean)                        
             for r in range(approach_repetitions):
                 print("---")               
                 print(f"REPETITION: {r + 1}/{approach_repetitions}:")
@@ -201,26 +201,28 @@ if __name__ == "__main__":
             time_std = np.std(mc_times[approach_name])   
             d_vs_ref = np.abs(h_mean - mc_ref_h_mean)
             speedup_vs_ref = mc_ref_time_mean / time_mean
+            i0, j0 = approach_extra_params["i"], approach_extra_params["j"]
             print("***")
             print("SUMMARY:")
             print(f"COMPARISON OF SINGLE HEIGHT VS REF: {contraction_ref_heights_out[i0, j0]=} vs {h_mean=}, ABS DIFF: {np.abs(h_mean - contraction_ref_heights_out[i0, j0]):.7e}]")            
             print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")                        
-            print(f"SPEEDUP VS REF: {speedup_vs_ref}")                                        
-            if PLOT_MC and approach_name == "APPROACH_MC_CPU_NUMPY":
-                sfwf_plot_mc_trajectories(heights_in, trajectories, h_mean)        
+            print(f"SPEEDUP VS REF: {speedup_vs_ref}")                                                                
     
     print(line_separator)
     print(line_separator)
     print("FINAL SUMMARY:")
     for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_CONTRACTION.items()):
         if approach_on:
+            if approach_name not in contraction_times:
+                print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name} SKIPPED.")
+                continue
             reference_info = " (REFERENCE)" if approach_name == contraction_ref_approach_name else ""
             time_mean = np.mean(contraction_times[approach_name])
             time_std = np.std(contraction_times[approach_name])
             speedup = contraction_ref_time_mean / time_mean 
             print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean}, STD: {time_std}, SPEED-UP: {speedup:.2f}", flush=True)
         else:
-            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{approach_function.__name__} OFF.")
+            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name} OFF.")
     for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_MC.items()):
         if approach_on:
             reference_info = " (REFERENCE)" if approach_name == mc_ref_approach_name else ""
@@ -234,4 +236,4 @@ if __name__ == "__main__":
     t2_main = time.time()    
     print(f"SOAP FILM IN A WIRE FRAME DONE [time: {t2_main - t1_main}].")
     sys.stdout = sys.__stdout__
-    logger.logfile.close()    
+    logger.logfile.close()
