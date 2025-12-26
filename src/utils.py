@@ -96,11 +96,11 @@ def experiment_hash_str(experiment_info, c_props, g_props, all_hs_digits=10, exp
     suffix += f"{experiment_info['MC_SEED']};{experiment_info['MC_SAMPLES']:.1e};{experiment_info['MC_EXAMPLE_PLOT']};{experiment_info['MC_EXAMPLE_PLOT_SAMPLES']};"
     for key in experiment_info.keys():
         if key.startswith("sfwf_contraction_"):
-            approaches_flags_str += "T" if experiment_info[key] else "F"
+            approaches_flags_str += "T" if experiment_info[key][0] else "F"
     approaches_flags_str += ";"  
     for key in experiment_info.keys():
         if key.startswith("sfwf_mc_"):
-            approaches_flags_str += "T" if experiment_info[key] else "F"            
+            approaches_flags_str += "T" if experiment_info[key][0] else "F"            
     suffix += f"{approaches_flags_str}"
     hs = f"{all_hs}_{experiment_hs}_{env_hs}_[{suffix}]"
     return hs
