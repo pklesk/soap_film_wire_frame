@@ -24,7 +24,7 @@ from pprint import pprint
 # global settings                
 FOLDER_EXPERIMENTS = "../experiments/"
 FOLDER_EXTRAS = "../extras/"
-DEFAULT_REPETITIONS = 3
+DEFAULT_REPETITIONS = 10
 
 # experiment settings    
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
@@ -47,8 +47,8 @@ APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (True, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
 APPROACHES_MC = { # approaches for Monte Carlo simulations
-    sfwf.sfwf_mc_cpu_numpy.__name__: (True, sfwf.sfwf_mc_cpu_numpy, 1, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
-    sfwf.sfwf_mc_cuda.__name__: (True, sfwf.sfwf_mc_cuda, DEFAULT_REPETITIONS, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "rpt": sfwf.DEFAULT_MC_CUDA_RPT, "tpb": sfwf.DEFAULT_MC_CUDA_TPB})
+    sfwf.sfwf_mc_cpu_numpy.__name__: (False, sfwf.sfwf_mc_cpu_numpy, 1, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
+    sfwf.sfwf_mc_cuda.__name__: (False, sfwf.sfwf_mc_cuda, DEFAULT_REPETITIONS, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "rpt": sfwf.DEFAULT_MC_CUDA_RPT, "tpb": sfwf.DEFAULT_MC_CUDA_TPB})
     }            
 
 # wire frame related functions
@@ -87,7 +87,7 @@ def approaches_info(approaches):
 # MAIN
 # --------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-            
+    
     experiment_info = {        
         "SEED": SEED, 
         "WF_FOURIER_N": WF_FOURIER_N,
