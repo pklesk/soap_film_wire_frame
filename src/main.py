@@ -30,7 +30,7 @@ DEFAULT_REPETITIONS = 10
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 317 # 317
+WF_BORDER_N = 1000 # 317
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
@@ -39,7 +39,7 @@ MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16
 MC_EXAMPLE_PLOT = False
 MC_EXAMPLE_PLOT_SAMPLES = 3 
 APPROACHES_CONTRACTION = { # approaches for contraction iteration
-    sfwf.sfwf_contraction_cpu_numpy.__name__: (True, sfwf.sfwf_contraction_cpu_numpy, 1, {}), 
+    sfwf.sfwf_contraction_cpu_numpy.__name__: (True, sfwf.sfwf_contraction_cpu_numpy, DEFAULT_REPETITIONS, {}), 
     sfwf.sfwf_contraction_cuda_small.__name__: (True, sfwf.sfwf_contraction_cuda_small, DEFAULT_REPETITIONS, {"tpb": sfwf.DEFAULT_TPB}),
     sfwf.sfwf_contraction_cuda_large_atomicmax.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
     sfwf.sfwf_contraction_cuda_large_atomicmax_globalmem.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmax_globalmem, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
@@ -220,7 +220,7 @@ if __name__ == "__main__":
             time_mean = np.mean(contraction_times[approach_name])
             time_std = np.std(contraction_times[approach_name])
             speedup = contraction_ref_time_mean / time_mean 
-            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean}, STD: {time_std}, SPEED-UP: {speedup:.2f}", flush=True)
+            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean} s, STD: {time_std} s, SPEED-UP: {speedup:.2f}", flush=True)
         else:
             print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name} OFF.")
     for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_MC.items()):
@@ -229,7 +229,7 @@ if __name__ == "__main__":
             time_mean = np.mean(mc_times[approach_name])
             time_std = np.std(mc_times[approach_name])
             speedup = mc_ref_time_mean / time_mean 
-            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean}, STD: {time_std}, SPEED-UP: {speedup:.2f}", flush=True)
+            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean} s, STD: {time_std} s, SPEED-UP: {speedup:.2f}", flush=True)
         else:
             print(f"MONTE CARLO APPROACH {index + 1}: {approach_name} OFF.")
     
