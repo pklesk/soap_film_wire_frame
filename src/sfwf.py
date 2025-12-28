@@ -4,7 +4,7 @@ __email__ = "pklesk@zut.edu.pl"
 import numpy as np
 import time
 from numba import cuda
-from numba import void, int8, int32, float32, boolean
+from numba import void, int8, int16, int32, float32, boolean
 from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32, xoroshiro128p_type
 from numba.core.errors import NumbaPerformanceWarning
 import math
@@ -18,6 +18,7 @@ DEFAULT_TPB_SIDE = 16
 DEFAULT_LAZY_STOP_CHECK = 100
 DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE = 64
 DEFAULT_CONTRACTION_CUDA_LARGE_GRIDSYNC_MAX_BPG = 100
+DEFAULT_CORES = 1024
 DEFAULT_MC_CUDA_TPB = 64
 DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE = 250 # 10**3 (250 for nice plot)
 DEFAULT_MC_CUDA_RPT = 10 # repetitions (walks) per thread (owing to this, fewer random generators can be initialized and CUDA blocks scheduled)                 
@@ -295,7 +296,6 @@ def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=D
         print(f"[reduce bpg: {1}, tpb: {tpb_reduce}]")
     k = 0
     while True:
-        #sfwf_contraction_cuda_large_gridreducemax_reset[1, 1](dev_d) #TODO
         sfwf_contraction_cuda_large_gridreducemax_job[bpg, tpb_job](dev_h_in, dev_h_out, dev_d)
         sfwf_contraction_cuda_large_gridreducemax_reduce[1, tpb_reduce](dev_d)
         k += 1
@@ -313,10 +313,6 @@ def sfwf_contraction_cuda_large_gridreducemax(heights_in, eps, lazy_stop_check=D
     if verbose:
         print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDREDUCEMAX DONE. [d_inf: {str(d)} iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
-
-@cuda.jit(void(float32[:]))     
-def sfwf_contraction_cuda_large_gridreducemax_reset(d): # TODO, probably to remove
-    d[0] = float32(0.0)
 
 @cuda.jit(void(float32[:, :], float32[:, :], float32[:]))    
 def sfwf_contraction_cuda_large_gridreducemax_job(h_in, h_out, d):         
@@ -371,6 +367,87 @@ def sfwf_contraction_cuda_large_gridreducemax_reduce(d):
         if e < job_blocks:
             shared_d[t] = max(shared_d[t], d[e])
         e += tpb    
+    cuda.syncthreads()
+    stride = tpb >> 1       
+    cuda.syncthreads()
+    while stride > 0: # max-reduction        
+        if t < stride:
+            shared_d[t] = max(shared_d[t], shared_d[t + stride])
+        cuda.syncthreads()
+        stride >>= 1
+    if t == 0:    
+        d[0] = shared_d[0]
+
+def sfwf_contraction_cuda_large_gridreducemax2(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, tpb_reduce=DEFAULT_TPB, cores=DEFAULT_CORES, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE GRIDREDUCEMAX2... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}, tpb_reduce: {tpb_reduce}, cores: {cores}]")
+    t1 = time.time()
+    dev_h_in = cuda.to_device(heights_in)
+    dev_h_out = cuda.device_array_like(heights_in)
+    tpb_job = (tpb_side, tpb_side)
+    bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
+    bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side        
+    bpg = (bpg_i, bpg_j)
+    bpg_i_j = bpg_i * bpg_j
+    cores = min(cores, bpg_i_j)
+    bpg_reduce = min(max(cores // tpb_reduce, 1), tpb_reduce)   
+    d = np.zeros(bpg_i_j, dtype=np.float32)
+    dev_d = cuda.to_device(d)
+    if verbose:       
+        print(f"[job bpg: {bpg}, tpb: {tpb_job}]")
+        print(f"[reduce bpg: {bpg_reduce}, tpb: {tpb_reduce}]")
+    k = 0
+    while True:
+        sfwf_contraction_cuda_large_gridreducemax_job[bpg, tpb_job](dev_h_in, dev_h_out, dev_d)
+        sfwf_contraction_cuda_large_gridreducemax2_reduce[bpg_reduce, tpb_reduce](dev_d)
+        sfwf_contraction_cuda_large_gridreducemax2_reduce_last[1, tpb_reduce](dev_d, bpg_reduce)
+        k += 1
+        if k % lazy_stop_check == 0:
+            dev_d.copy_to_host(ary=d)
+            cuda.synchronize()        
+            if d[0] <= eps:
+                break        
+        tmp = dev_h_in
+        dev_h_in = dev_h_out
+        dev_h_out = tmp
+    heights_out = dev_h_out.copy_to_host()
+    d = d[0]    
+    t2 = time.time()
+    if verbose:
+        print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDREDUCEMAX2 DONE. [d_inf: {str(d)} iterations: {k}, time: {t2 - t1} s]")    
+    return heights_out, d, k, t2 - t1
+
+@cuda.jit(void(float32[:]))    
+def sfwf_contraction_cuda_large_gridreducemax2_reduce(d):         
+    shared_d = cuda.shared.array(512, dtype=float32) # corresponds to DEFAULT_TPB
+    tpb = cuda.blockDim.x
+    bpg_i_j = d.shape[0]
+    grid_stride = cuda.gridDim.x * tpb
+    ept = (bpg_i_j + grid_stride - 1) // grid_stride 
+    t = cuda.threadIdx.x
+    e = t
+    shared_d[t] = float32(0.0)
+    for _ in range(ept):
+        if e < bpg_i_j:
+            shared_d[t] = max(shared_d[t], d[e])
+        e += grid_stride
+    cuda.syncthreads()
+    stride = tpb >> 1       
+    cuda.syncthreads()
+    while stride > 0: # max-reduction        
+        if t < stride:
+            shared_d[t] = max(shared_d[t], shared_d[t + stride])
+        cuda.syncthreads()
+        stride >>= 1
+    if t == 0:    
+        d[cuda.blockIdx.x] = shared_d[0]
+
+@cuda.jit(void(float32[:], int16))    
+def sfwf_contraction_cuda_large_gridreducemax2_reduce_last(d, bpg_reduce):
+    shared_d = cuda.shared.array(512, dtype=float32) # corresponds to DEFAULT_TPB
+    tpb = cuda.blockDim.x 
+    t = cuda.threadIdx.x    
+    shared_d[t] = d[t] if t < bpg_reduce else float32(0.0)
     cuda.syncthreads()
     stride = tpb >> 1       
     cuda.syncthreads()
