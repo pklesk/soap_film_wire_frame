@@ -379,6 +379,70 @@ def sfwf_contraction_cuda_large_hreducemax_reduce(d):
     if t == 0:    
         d[0] = shared_d[0]
 
+
+def sfwf_contraction_cuda_large_hreducemaxgm(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, tpb_reduce=DEFAULT_TPB, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE HREDUCEMAXGM... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}, tpb_reduce: {tpb_reduce}]")
+    t1 = time.time()
+    dev_h_in = cuda.to_device(heights_in)
+    dev_h_out = cuda.device_array_like(heights_in)
+    tpb_job = (tpb_side, tpb_side)
+    bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
+    bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side      
+    bpg = (bpg_i, bpg_j)
+    d = np.zeros(bpg_i * bpg_j, dtype=np.float32)
+    dev_d = cuda.to_device(d)
+    if verbose:       
+        print(f"[job bpg: {bpg}, tpb: {tpb_job}]")
+        print(f"[reduce bpg: {1}, tpb: {tpb_reduce}]")
+    k = 0
+    while True:
+        sfwf_contraction_cuda_large_hreducemaxgm_job[bpg, tpb_job](dev_h_in, dev_h_out, dev_d)        
+        k += 1
+        if k % lazy_stop_check == 0:
+            sfwf_contraction_cuda_large_hreducemax_reduce[1, tpb_reduce](dev_d)
+            dev_d.copy_to_host(ary=d)
+            cuda.synchronize()        
+            if d[0] <= eps:
+                break        
+        tmp = dev_h_in
+        dev_h_in = dev_h_out
+        dev_h_out = tmp 
+    heights_out = dev_h_out.copy_to_host()
+    d = d[0]    
+    t2 = time.time()
+    if verbose:
+        print(f"SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGM DONE. [d_inf: {str(d)} iterations: {k}, time: {t2 - t1} s]")    
+    return heights_out, d, k, t2 - t1
+
+@cuda.jit(void(float32[:, :], float32[:, :], float32[:]))    
+def sfwf_contraction_cuda_large_hreducemaxgm_job(h_in, h_out, d):         
+    shared_d = cuda.shared.array(16**2, dtype=float32) # corresponds to DEFAULT_TPB_SIDE**2
+    i, j = cuda.grid(2)
+    ti, tj = cuda.threadIdx.x, cuda.threadIdx.y
+    t = ti * cuda.blockDim.y + tj 
+    m, n = h_in.shape
+    if i < m and j < n:    
+        inside = (i > 0 and i < m - 1 and j > 0 and j < n - 1)    
+        if inside:
+            h_out[i, j] = float32(0.25) * (h_in[i - 1, j] + h_in[i + 1, j] + h_in[i, j - 1] + h_in[i, j + 1]) # contraction
+        else:
+            h_out[i, j] = h_in[i, j]                    
+    cuda.syncthreads()    
+    shared_d[t] = math.fabs(h_out[i, j] - h_in[i, j]) if i < m and j < n else float32(0.0)
+    cuda.syncthreads()
+    tpb = cuda.blockDim.x * cuda.blockDim.y
+    stride = tpb >> 1       
+    cuda.syncthreads()
+    while stride > 0: # max-reduction        
+        if t < stride:
+            shared_d[t] = max(shared_d[t], shared_d[t + stride])
+        cuda.syncthreads()
+        stride >>= 1
+    if t == 0:        
+        b = cuda.blockIdx.x * cuda.gridDim.y + cuda.blockIdx.y
+        d[b] = shared_d[0]
+
 def sfwf_contraction_cuda_large_hreducemaxgsr(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, tpb_gsr=DEFAULT_TPB_GSR, tpb_reduce=DEFAULT_TPB, cores=DEFAULT_CORES, verbose=True):
     if verbose:
         print(f"SFWF CONTRACTION CUDA LARGE HREDUCEMAXGSR... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}, tpb_gsr: {tpb_gsr}, tpb_reduce: {tpb_reduce}, cores: {cores}]")
@@ -459,6 +523,45 @@ def sfwf_contraction_cuda_large_hreducemaxgsr_reduce2(d, size):
         stride >>= 1
     if t == 0:    
         d[0] = shared_d[0]
+
+def sfwf_contraction_cuda_large_hreducemaxgsrgm(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, tpb_gsr=DEFAULT_TPB_GSR, tpb_reduce=DEFAULT_TPB, cores=DEFAULT_CORES, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE HREDUCEMAXGSRGM... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}, tpb_gsr: {tpb_gsr}, tpb_reduce: {tpb_reduce}, cores: {cores}]")
+    t1 = time.time()
+    dev_h_in = cuda.to_device(heights_in)
+    dev_h_out = cuda.device_array_like(heights_in)
+    tpb_job = (tpb_side, tpb_side)
+    bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
+    bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side        
+    bpg = (bpg_i, bpg_j)
+    bpg_i_j = bpg_i * bpg_j
+    bpg_gsr = min(max(cores // tpb_gsr, 1), tpb_reduce)   
+    d = np.zeros(bpg_i_j, dtype=np.float32)
+    dev_d = cuda.to_device(d)
+    if verbose:       
+        print(f"[job bpg: {bpg}, tpb: {tpb_job}]")
+        print(f"[reduce1 (grid-shift) bpg: {bpg_gsr}, tpb: {tpb_gsr}]")
+        print(f"[reduce2 bpg: 1, tpb: {tpb_reduce}]")
+    k = 0
+    while True:
+        sfwf_contraction_cuda_large_hreducemaxgm_job[bpg, tpb_job](dev_h_in, dev_h_out, dev_d) # same main kernal as in simple hreducemax
+        k += 1
+        if k % lazy_stop_check == 0:
+            sfwf_contraction_cuda_large_hreducemaxgsr_reduce1[bpg_gsr, tpb_gsr](dev_d)
+            sfwf_contraction_cuda_large_hreducemaxgsr_reduce2[1, tpb_reduce](dev_d, min(bpg_gsr, bpg_i_j))
+            dev_d.copy_to_host(ary=d)
+            cuda.synchronize()
+            if d[0] <= eps:
+                break        
+        tmp = dev_h_in
+        dev_h_in = dev_h_out
+        dev_h_out = tmp        
+    heights_out = dev_h_out.copy_to_host()
+    d = d[0]    
+    t2 = time.time()
+    if verbose:
+        print(f"SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGSRGM DONE. [d_inf: {str(d)} iterations: {k}, time: {t2 - t1} s]")    
+    return heights_out, d, k, t2 - t1
 
 def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_SIDE, max_bpg_gridsync=None, verbose=True):
     if verbose:
