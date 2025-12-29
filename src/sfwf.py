@@ -15,7 +15,6 @@ os.environ["NUMBA_DISABLE_PERFORMANCE_WARNINGS"] = "1"
 
 DEFAULT_TPB = cuda.get_current_device().MAX_THREADS_PER_BLOCK // 2
 DEFAULT_TPB_SIDE = 16 
-DEFAULT_TPB_GS = 128 # for grid-stride reductions
 DEFAULT_LAZY_STOP_CHECK = 100
 DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE = 64
 DEFAULT_CONTRACTION_CUDA_LARGE_GRIDSYNC_MAX_BPG = 100
@@ -375,9 +374,9 @@ def sfwf_contraction_cuda_large_hreducemax_reduce(d):
     if t == 0:    
         d[0] = shared_d[0]
 
-def sfwf_contraction_cuda_large_hreducemaxgs(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, tpb_gs=DEFAULT_TPB_GS, tpb_reduce=DEFAULT_TPB, cores=DEFAULT_CORES, verbose=True):
+def sfwf_contraction_cuda_large_hreducemaxgs(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, tpb_reduce=DEFAULT_TPB, cores=DEFAULT_CORES, verbose=True):
     if verbose:
-        print(f"SFWF CONTRACTION CUDA LARGE HREDUCEMAXGS... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}, tpb_gs: {tpb_gs}, tpb_reduce: {tpb_reduce}, cores: {cores}]") # "gs" suffix: grid-stride 
+        print(f"SFWF CONTRACTION CUDA LARGE HREDUCEMAXGS... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}, tpb_reduce: {tpb_reduce}, cores: {cores}]") # "gs" suffix: grid-stride 
     t1 = time.time()
     dev_h_in = cuda.to_device(heights_in)
     dev_h_out = cuda.device_array_like(heights_in)
@@ -386,6 +385,7 @@ def sfwf_contraction_cuda_large_hreducemaxgs(heights_in, eps, lazy_stop_check=DE
     bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side        
     bpg = (bpg_i, bpg_j)
     bpg_i_j = bpg_i * bpg_j
+    tpb_gs = 128 # common choice for grid-stride loops
     bpg_gs = min(max(cores // tpb_gs, 1), tpb_reduce)   
     d = np.zeros(bpg_i_j, dtype=np.float32)
     dev_d = cuda.to_device(d)
