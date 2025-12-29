@@ -32,7 +32,7 @@ DEFAULT_REPETITIONS = 10
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 1000
+WF_BORDER_N = 50
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
@@ -47,7 +47,7 @@ APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cuda_large_atomicmaxglosten.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmaxglosten, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
     sfwf.sfwf_contraction_cuda_large_hreducemax.__name__: (True, sfwf.sfwf_contraction_cuda_large_hreducemax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB}),    
     sfwf.sfwf_contraction_cuda_large_hreducemaxgs.__name__: (True, sfwf.sfwf_contraction_cuda_large_hreducemaxgs, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB, "cores": g_props["cores_total"]}),
-    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (True, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
+    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
 APPROACHES_MC = { # approaches for Monte Carlo simulations
     sfwf.sfwf_mc_cpu_numpy.__name__: (False, sfwf.sfwf_mc_cpu_numpy, 1, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
@@ -133,6 +133,8 @@ if __name__ == "__main__":
     contraction_ref_heights_out = None
     contraction_ref_time_mean = None
     contraction_times = {}
+    contraction_ds = {}
+    contraction_ks = {}    
     for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_CONTRACTION.items()):
         if approach_on:
             print(line_separator)
@@ -144,11 +146,17 @@ if __name__ == "__main__":
                 print("---")               
                 print(f"REPETITION: {r + 1}/{approach_repetitions}:")
                 heights_out, d, k, time_ = approach_function(heights_in, eps=CONTRACTION_EPS, **approach_extra_params)
-                if approach_name not in contraction_times:
+                if approach_name not in contraction_times:                    
                     contraction_times[approach_name] = []
-                contraction_times[approach_name].append(time_)            
+                    contraction_ds[approach_name] = []
+                    contraction_ks[approach_name] = []
+                contraction_times[approach_name].append(time_)
+                contraction_ds[approach_name].append(d)
+                contraction_ks[approach_name].append(k)            
             time_mean = np.mean(contraction_times[approach_name])
-            time_std = np.std(contraction_times[approach_name])            
+            time_std = np.std(contraction_times[approach_name])
+            d_mean = np.mean(contraction_ds[approach_name])
+            k_mean = np.mean(contraction_ks[approach_name])
             if contraction_ref_approach_name is None:
                 contraction_ref_approach_name = approach_name
                 contraction_ref_heights_out = heights_out
@@ -158,7 +166,9 @@ if __name__ == "__main__":
             print("***")
             print("SUMMARY:")
             print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
-            print(f"D_INF OF HEIGHTS VS REF: {str(d_vs_ref)}")                    
+            print(f"D_INF OF HEIGHTS VS REF: {str(d_vs_ref)}")
+            print(f"D_INF (AT STOP) MEAN: {d_mean} s")
+            print(f"ITERATIONS MEAN: {k_mean} s")                    
             print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")                        
             print(f"SPEEDUP VS REF: {speedup_vs_ref}")            
             if CONTRACTION_PLOTS: 
@@ -216,10 +226,12 @@ if __name__ == "__main__":
                 print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name} SKIPPED.")
                 continue
             reference_info = " (REFERENCE)" if approach_name == contraction_ref_approach_name else ""
+            k_mean = np.mean(contraction_ks[approach_name])
+            d_mean = np.mean(contraction_ds[approach_name])
             time_mean = np.mean(contraction_times[approach_name])
             time_std = np.std(contraction_times[approach_name])
             speedup = contraction_ref_time_mean / time_mean 
-            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean} s, STD: {time_std} s, SPEED-UP: {speedup:.2f}", flush=True)
+            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN ITERATIONS: {k_mean}, MEAN D_INF: {d_mean}, MEAN TIME: {time_mean} s, TIME STD: {time_std} s, SPEED-UP: {speedup:.2f}", flush=True)
         else:
             print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name} OFF.")
     for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_MC.items()):
@@ -228,11 +240,11 @@ if __name__ == "__main__":
             time_mean = np.mean(mc_times[approach_name])
             time_std = np.std(mc_times[approach_name])
             speedup = mc_ref_time_mean / time_mean 
-            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean} s, STD: {time_std} s, SPEED-UP: {speedup:.2f}", flush=True)
+            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean} s, TIME STD: {time_std} s, SPEED-UP: {speedup:.2f}", flush=True)
         else:
             print(f"MONTE CARLO APPROACH {index + 1}: {approach_name} OFF.")
     
     t2_main = time.time()    
-    print(f"SOAP FILM IN A WIRE FRAME DONE [time: {t2_main - t1_main}].")
+    print(f"SOAP FILM IN A WIRE FRAME DONE [hash string: {experiment_hs}, time: {t2_main - t1_main}].")
     sys.stdout = sys.__stdout__
     logger.logfile.close()
