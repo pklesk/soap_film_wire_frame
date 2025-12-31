@@ -529,11 +529,11 @@ def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):
             hij = h_in[i, j] if (i < m and j < n) else float32(0.0)
             shared_h_in[tip1, tjp1] = hij
             shared_h_out[tip1, tjp1] = hij
-            if ti == 0 and i > 0 and j < n:
+            if ti == 0 and i > 0 and i < m and j < n:
                 shared_h_in[0, tjp1] = h_in[i - 1, j]
             if ti == cuda.blockDim.x - 1 and i < m - 1 and j < n:
                 shared_h_in[cuda.blockDim.x + 1, tjp1] = h_in[i + 1, j]        
-            if tj == 0 and j > 0 and i < m:
+            if tj == 0 and j > 0 and j < n and i < m:
                 shared_h_in[tip1, 0] = h_in[i, j - 1]
             if tj == cuda.blockDim.y - 1 and j < n - 1 and i < m:
                 shared_h_in[tip1, cuda.blockDim.y + 1] = h_in[i, j + 1]    
