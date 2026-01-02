@@ -245,6 +245,6 @@ if __name__ == "__main__":
             print(f"MONTE CARLO APPROACH {index + 1}: {approach_name} OFF.")
     
     t2_main = time.time()    
-    print(f"SOAP FILM IN A WIRE FRAME DONE [hash string: {experiment_hs}, time: {t2_main - t1_main}].")
+    print(f"SOAP FILM IN A WIRE FRAME DONE. [hash string: {experiment_hs}, time: {t2_main - t1_main}]")
     sys.stdout = sys.__stdout__
     logger.logfile.close()
