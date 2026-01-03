@@ -503,13 +503,13 @@ def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_S
     return heights_out, d, k, t2 - t1        
 
 @cuda.jit(void(float32[:, :], float32, float32[:, :], float32[:], int32[:], boolean[:]))    
-def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):           
+def sfwf_contraction_cuda_large_gridsync_job_old(h_in, eps, h_out, d, k, stop_all):           
     shared_h_in = cuda.shared.array((16 + 2, 16 + 2), dtype=float32) # corresponds to DEFAULT_TPB_SIDE + padding for neighbors' values 
     shared_h_out = cuda.shared.array((16 + 2, 16 + 2), dtype=float32) # corresponds to DEFAULT_TPB_SIDE + padding for neighbors' values
     shared_d = cuda.shared.array(16**2, dtype=float32) # corresponds to DEFAULT_TPB_SIDE**2    
     ti, tj = cuda.threadIdx.x, cuda.threadIdx.y
     i0, j0 = cuda.grid(2)
-    b = cuda.blockIdx.x * cuda.blockDim.x + cuda.blockIdx.y # block 1d index
+    b = cuda.blockIdx.x * cuda.gridDim.y + cuda.blockIdx.y # block 1d index
     g = cuda.cg.this_grid() 
     tip1, tjp1 = ti + 1, tj + 1
     t = ti * cuda.blockDim.y + tj 
@@ -556,6 +556,8 @@ def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):
             g.sync()
             if i < m and j < n:
                 h_in[i, j] = shared_h_out[tip1, tjp1]
+            if e + 1 < ept:
+                g.sync()
         if b == 0 and t == 0:
             k[0] += 1
             if d[0] <= eps:
@@ -565,6 +567,73 @@ def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):
         g.sync() 
         if stop_all[0]:
             break
+
+@cuda.jit(void(float32[:, :], float32, float32[:, :], float32[:], int32[:], boolean[:]))    
+def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):           
+    shared_h = cuda.shared.array((16 + 2, 16 + 2), dtype=float32) # corresponds to DEFAULT_TPB_SIDE + padding for neighbors' values 
+    shared_d = cuda.shared.array(16**2, dtype=float32) # corresponds to DEFAULT_TPB_SIDE**2    
+    ti, tj = cuda.threadIdx.x, cuda.threadIdx.y
+    i0, j0 = cuda.grid(2)
+    b = cuda.blockIdx.x * cuda.gridDim.y + cuda.blockIdx.y # block 1d index
+    g = cuda.cg.this_grid() 
+    tip1, tjp1 = ti + 1, tj + 1
+    t = ti * cuda.blockDim.y + tj 
+    m, n = h_in.shape
+    tpb = cuda.blockDim.x * cuda.blockDim.y
+    tpg_i = cuda.gridDim.x * cuda.blockDim.x
+    tpg_j = cuda.gridDim.y * cuda.blockDim.y
+    ept_i = (m + tpg_i - 1) // tpg_i
+    ept_j = (n + tpg_j - 1) // tpg_j
+    ept = ept_i * ept_j
+    mg_j = (n + tpg_j - 1) // tpg_j # super-grid dim j
+    src = h_in
+    dst = h_out
+    while True: 
+        for e in range(ept):
+            ei, ej = e // mg_j, e % mg_j
+            i = i0 + ei * tpg_i
+            j = j0 + ej * tpg_j            
+            hij = src[i, j] if (i < m and j < n) else float32(0.0)
+            shared_h[tip1, tjp1] = hij
+            if ti == 0 and i > 0 and i < m and j < n:
+                shared_h[0, tjp1] = src[i - 1, j]
+            if ti == cuda.blockDim.x - 1 and i < m - 1 and j < n:
+                shared_h[cuda.blockDim.x + 1, tjp1] = src[i + 1, j]        
+            if tj == 0 and j > 0 and j < n and i < m:
+                shared_h[tip1, 0] = src[i, j - 1]
+            if tj == cuda.blockDim.y - 1 and j < n - 1 and i < m:
+                shared_h[tip1, cuda.blockDim.y + 1] = src[i, j + 1]    
+            cuda.syncthreads()
+            new_val = hij    
+            if i > 0 and i < m - 1 and j > 0 and j < n - 1 :
+                new_val = float32(0.25) * (shared_h[tip1 - 1, tjp1] + shared_h[tip1 + 1, tjp1] + shared_h[tip1 , tjp1 - 1] + shared_h[tip1, tjp1 + 1]) # contraction
+            if i < m and j < n:
+                dst[i, j] = new_val 
+            cuda.syncthreads()
+            shared_d[t] = math.fabs(new_val - hij)        
+            stride = tpb >> 1
+            cuda.syncthreads()
+            while stride > 0: # max-reduction        
+                if t < stride:
+                    shared_d[t] = max(shared_d[t], shared_d[t + stride])
+                cuda.syncthreads()
+                stride >>= 1
+            if t == 0:
+                cuda.atomic.max(d, 0, shared_d[0])
+            cuda.synchronize()
+        g.sync()
+        if b == 0 and t == 0:
+            k[0] += 1
+            if d[0] <= eps:
+                stop_all[0] = True
+            else:
+                d[0] = float32(0.0)
+        g.sync() 
+        if stop_all[0]:
+            break
+        tmp = src
+        src = dst
+        dst = tmp
 
 def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE, verbose=True, verbose_gap_percent=0.1, collect_trajectories=False):
     if verbose:
