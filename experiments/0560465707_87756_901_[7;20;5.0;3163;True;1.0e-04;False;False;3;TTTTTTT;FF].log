@@ -1,0 +1,65 @@
+SOAP FILM IN A WIRE FRAME...
+HASH STRING: 0560465707_87756_901_[7;20;5.0;3163;True;1.0e-04;False;False;3;TTTTTTT;FF]
+====================================================================================================================================================================================================================================================
+EXPERIMENT INFO:
+{
+  SEED: 7,
+  WF_FOURIER_N: 20,
+  WF_FOURIER_AMPLITUDE: 5.0,
+  WF_BORDER_N: 3163,
+  NUMPY_SINGLE_THREAD: True,
+  CONTRACTION_EPS: 0.0001,
+  CONTRACTION_PLOTS: False,
+  MC_EXAMPLE_PLOT: False,
+  MC_EXAMPLE_PLOT_SAMPLES: 3,
+  sfwf_contraction_cpu_numpy: (True, 'sfwf_contraction_cpu_numpy', 10, {}),
+  sfwf_contraction_cuda_small: (True, 'sfwf_contraction_cuda_small', 10, {'tpb': 512}),
+  sfwf_contraction_cuda_large_atomicmax: (True, 'sfwf_contraction_cuda_large_atomicmax', 10, {'lazy_stop_check': 100, 'tpb_side': 16}),
+  sfwf_contraction_cuda_large_atomicmaxglosten: (True, 'sfwf_contraction_cuda_large_atomicmaxglosten', 10, {'lazy_stop_check': 100, 'tpb_side': 16}),
+  sfwf_contraction_cuda_large_hreducemax: (True, 'sfwf_contraction_cuda_large_hreducemax', 10, {'lazy_stop_check': 100, 'tpb_side': 16, 'tpb_reduce': 512}),
+  sfwf_contraction_cuda_large_hreducemaxgs: (True, 'sfwf_contraction_cuda_large_hreducemaxgs', 10, {'lazy_stop_check': 100, 'tpb_side': 16, 'tpb_reduce': 512, 'cores': 21760}),
+  sfwf_contraction_cuda_large_gridsync: (True, 'sfwf_contraction_cuda_large_gridsync', 10, {'tpb_side': 16}),
+  sfwf_mc_cpu_numpy: (False, 'sfwf_mc_cpu_numpy', 0, {}),
+  sfwf_mc_cuda: (False, 'sfwf_mc_cuda', 0, {})
+}
+====================================================================================================================================================================================================================================================
+CPU AND SYSTEM:
+{'cpu_name': 'AMD Ryzen 9 9950X 16-Core Processor',
+ 'os_machine': 'x86_64',
+ 'os_name': 'Linux 6.14.0-37-generic',
+ 'os_version': '#37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC '
+               '2',
+ 'ram_size': '123.4 GB'}
+GPU:
+{'async_engine_count': 2,
+ 'can_map_host_memory': 1,
+ 'compute_capability': ComputeCapability(major=12, minor=0),
+ 'cores_per_SM': 128,
+ 'cores_total': 21760,
+ 'max_block_dim_x': 1024,
+ 'max_block_dim_y': 1024,
+ 'max_block_dim_z': 64,
+ 'max_grid_dim_x': 2147483647,
+ 'max_grid_dim_y': 65535,
+ 'max_grid_dim_z': 65535,
+ 'max_shared_memory_per_block': 49152,
+ 'max_threads_per_block': 1024,
+ 'multiprocessor_count': 170,
+ 'name': 'NVIDIA GeForce RTX 5090',
+ 'pci_bus_id': 1,
+ 'pci_device_id': 0,
+ 'unified_addressing': 1,
+ 'warp_size': 32}
+====================================================================================================================================================================================================================================================
+RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): 10004569
+HEIGHTS IN[:5, :5]:
+[[25.365894 25.274918 25.1834   25.091347 24.998768]
+ [25.456287  0.        0.        0.        0.      ]
+ [25.546192  0.        0.        0.        0.      ]
+ [25.635464  0.        0.        0.        0.      ]
+ [25.724228  0.        0.        0.        0.      ]]
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 1: sfwf_contraction_cpu_numpy...
+---
+REPETITION: 1/10:
+SFWF CONTRACTION CPU NUMPY... [eps: 0.0001]
