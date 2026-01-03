@@ -26,28 +26,28 @@ g_props = gpu_props()
 # global settings                
 FOLDER_EXPERIMENTS = "../experiments/"
 FOLDER_EXTRAS = "../extras/"
-DEFAULT_REPETITIONS = 10
+DEFAULT_REPETITIONS = 5 # TODO 10
 
 # experiment settings    
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 100
+WF_BORDER_N = 317
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
-MC_SAMPLES = 10**6
+MC_SAMPLES = 10**5
 MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED_CPU_NUMPY = 0
 MC_EXAMPLE_PLOT = False
 MC_EXAMPLE_PLOT_SAMPLES = 3 
 APPROACHES_CONTRACTION = { # approaches for contraction iteration
-    sfwf.sfwf_contraction_cpu_numpy.__name__: (True, sfwf.sfwf_contraction_cpu_numpy, 1, {}), 
-    sfwf.sfwf_contraction_cuda_small.__name__: (True, sfwf.sfwf_contraction_cuda_small, DEFAULT_REPETITIONS, {"tpb": sfwf.DEFAULT_TPB}),
+    sfwf.sfwf_contraction_cpu_numpy.__name__: (False, sfwf.sfwf_contraction_cpu_numpy, 1, {}), 
+    sfwf.sfwf_contraction_cuda_small.__name__: (False, sfwf.sfwf_contraction_cuda_small, DEFAULT_REPETITIONS, {"tpb": sfwf.DEFAULT_TPB}),
     sfwf.sfwf_contraction_cuda_large_atomicmax.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
     sfwf.sfwf_contraction_cuda_large_atomicmaxglosten.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmaxglosten, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
     sfwf.sfwf_contraction_cuda_large_hreducemax.__name__: (True, sfwf.sfwf_contraction_cuda_large_hreducemax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB}),    
-    sfwf.sfwf_contraction_cuda_large_hreducemaxgs.__name__: (True, sfwf.sfwf_contraction_cuda_large_hreducemaxgs, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB, "cores": g_props["cores_total"]}),
-    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (True, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
+    sfwf.sfwf_contraction_cuda_large_hreducemaxgs.__name__: (False, sfwf.sfwf_contraction_cuda_large_hreducemaxgs, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB, "cores": g_props["cores_total"]}),
+    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
 APPROACHES_MC = { # approaches for Monte Carlo simulations
     sfwf.sfwf_mc_cpu_numpy.__name__: (False, sfwf.sfwf_mc_cpu_numpy, 1, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
     t1_main = time.time()
     print("SOAP FILM IN A WIRE FRAME...")    
-    line_separator = 196 * "="   
+    line_separator = 244 * "="   
     print(f"HASH STRING: {experiment_hs}")
     print(line_separator)
     print(f"EXPERIMENT INFO:\n{dict_to_str(experiment_info)}")
@@ -169,7 +169,7 @@ if __name__ == "__main__":
             print(f"D_INF OF HEIGHTS VS REF: {str(d_vs_ref)}")
             print(f"D_INF (AT STOP) MEAN: {d_mean} s")
             print(f"ITERATIONS MEAN: {k_mean} s")                    
-            print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")                        
+            print(f"TIME MEAN: {time_mean} s, STD: {time_std} s, STD_%: {(time_std / time_mean) * 100:.1f}%")                        
             print(f"SPEEDUP VS REF: {speedup_vs_ref}")            
             if CONTRACTION_PLOTS: 
                 method_name = approach_function.__name__
@@ -214,7 +214,7 @@ if __name__ == "__main__":
             print("***")
             print("SUMMARY:")
             print(f"COMPARISON OF SINGLE HEIGHT VS REF -> h_mean: {str(h_mean)} VS contraction_ref_heights_out[i0, j0]: {str(contraction_ref_heights_out[i0, j0])}, ABS DIFF: {np.abs(h_mean - contraction_ref_heights_out[i0, j0]):.7e}]")            
-            print(f"TIME MEAN: {time_mean} s, STD: {time_std} s")                        
+            print(f"TIME MEAN: {time_mean} s, STD: {time_std} s, STD_%: {(time_std / time_mean) * 100:.1f}%")                        
             print(f"SPEEDUP VS REF: {speedup_vs_ref}")                                                                
     
     print(line_separator)
@@ -231,7 +231,7 @@ if __name__ == "__main__":
             time_mean = np.mean(contraction_times[approach_name])
             time_std = np.std(contraction_times[approach_name])
             speedup = contraction_ref_time_mean / time_mean 
-            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN ITERATIONS: {k_mean}, MEAN D_INF: {d_mean}, MEAN TIME: {time_mean} s, TIME STD: {time_std} s, SPEED-UP: {speedup:.2f}", flush=True)
+            print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN ITERATIONS: {k_mean}, MEAN D_INF: {d_mean}, MEAN TIME: {time_mean} s, TIME STD: {time_std} s, STD_%: {(time_std / time_mean) * 100:.1f}%, SPEED-UP: {speedup:.2f}", flush=True)
         else:
             print(f"CONTRACTION ITERATION APPROACH {index + 1}: {approach_name} OFF.")
     for index, (approach_name, (approach_on, approach_function, approach_repetitions, approach_extra_params)) in enumerate(APPROACHES_MC.items()):
@@ -240,7 +240,7 @@ if __name__ == "__main__":
             time_mean = np.mean(mc_times[approach_name])
             time_std = np.std(mc_times[approach_name])
             speedup = mc_ref_time_mean / time_mean 
-            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean} s, TIME STD: {time_std} s, SPEED-UP: {speedup:.2f}", flush=True)
+            print(f"MONTE CARLO APPROACH {index + 1}: {approach_name}{reference_info} -> MEAN TIME: {time_mean} s, TIME STD: {time_std} s,  STD_%: {(time_std / time_mean) * 100:.1f}%, SPEED-UP: {speedup:.2f}", flush=True)
         else:
             print(f"MONTE CARLO APPROACH {index + 1}: {approach_name} OFF.")
     
