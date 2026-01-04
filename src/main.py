@@ -32,10 +32,14 @@ SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURI
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
 <<<<<<< HEAD
+<<<<<<< HEAD
 WF_BORDER_N = 32
 =======
 WF_BORDER_N = 3163
 >>>>>>> e61e56f (experiment 3163 from 3090)
+=======
+WF_BORDER_N = 3163
+>>>>>>> 21f9707 (experiment 3163 from 5090)
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
