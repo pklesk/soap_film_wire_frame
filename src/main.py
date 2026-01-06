@@ -167,7 +167,7 @@ if __name__ == "__main__":
             print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
             print(f"D_INF OF HEIGHTS VS REF: {str(d_vs_ref)}")
             print(f"D_INF (AT STOP) MEAN: {d_mean}")
-            print(f"ITERATIONS MEAN: {k_mean} s")                    
+            print(f"ITERATIONS MEAN: {k_mean}")                    
             print(f"TIME MEAN: {time_mean} s, STD: {time_std} s, STD_%: {(time_std / time_mean) * 100:.1f}%")                        
             print(f"SPEEDUP VS REF: {speedup_vs_ref}")            
             if CONTRACTION_PLOTS: 
