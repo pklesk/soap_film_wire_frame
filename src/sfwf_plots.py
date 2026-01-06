@@ -1,3 +1,6 @@
+__author__ = "Przemysław Klęsk"
+__email__ = "pklesk@zut.edu.pl"
+
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.gridspec import GridSpec

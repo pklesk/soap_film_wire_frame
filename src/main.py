@@ -31,15 +31,7 @@ DEFAULT_REPETITIONS = 10
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-<<<<<<< HEAD
-<<<<<<< HEAD
 WF_BORDER_N = 32
-=======
-WF_BORDER_N = 3163
->>>>>>> e61e56f (experiment 3163 from 3090)
-=======
-WF_BORDER_N = 3163
->>>>>>> 21f9707 (experiment 3163 from 5090)
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
@@ -174,7 +166,7 @@ if __name__ == "__main__":
             print("SUMMARY:")
             print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
             print(f"D_INF OF HEIGHTS VS REF: {str(d_vs_ref)}")
-            print(f"D_INF (AT STOP) MEAN: {d_mean} s")
+            print(f"D_INF (AT STOP) MEAN: {d_mean}")
             print(f"ITERATIONS MEAN: {k_mean} s")                    
             print(f"TIME MEAN: {time_mean} s, STD: {time_std} s, STD_%: {(time_std / time_mean) * 100:.1f}%")                        
             print(f"SPEEDUP VS REF: {speedup_vs_ref}")            
