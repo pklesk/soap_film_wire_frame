@@ -1,0 +1,163 @@
+SOAP FILM IN A WIRE FRAME...
+HASH STRING: 0287451717_23383_692_[7;20;5.0;64;True;1.0e-04;False;False;3;FFTFFFF;TT]
+====================================================================================================================================================================================================================================================
+EXPERIMENT INFO:
+{
+  SEED: 7,
+  WF_FOURIER_N: 20,
+  WF_FOURIER_AMPLITUDE: 5.0,
+  WF_BORDER_N: 64,
+  NUMPY_SINGLE_THREAD: True,
+  CONTRACTION_EPS: 0.0001,
+  CONTRACTION_PLOTS: False,
+  MC_EXAMPLE_PLOT: False,
+  MC_EXAMPLE_PLOT_SAMPLES: 3,
+  sfwf_contraction_cpu_numpy: (False, 'sfwf_contraction_cpu_numpy', 0, {}),
+  sfwf_contraction_cuda_small: (False, 'sfwf_contraction_cuda_small', 0, {}),
+  sfwf_contraction_cuda_large_atomicmax: (True, 'sfwf_contraction_cuda_large_atomicmax', 3, {'lazy_stop_check': 100, 'tpb_side': 16}),
+  sfwf_contraction_cuda_large_atomicmaxglosten: (False, 'sfwf_contraction_cuda_large_atomicmaxglosten', 0, {}),
+  sfwf_contraction_cuda_large_hreducemax: (False, 'sfwf_contraction_cuda_large_hreducemax', 0, {}),
+  sfwf_contraction_cuda_large_hreducemaxgs: (False, 'sfwf_contraction_cuda_large_hreducemaxgs', 0, {}),
+  sfwf_contraction_cuda_large_gridsync: (False, 'sfwf_contraction_cuda_large_gridsync', 0, {}),
+  sfwf_mc_cpu_numpy: (True, 'sfwf_mc_cpu_numpy', 1, {'i': 12, 'j': 36, 'n_samples': 100000, 'seed': 0, 'chunk_size': 250}),
+  sfwf_mc_cuda: (True, 'sfwf_mc_cuda', 3, {'i': 12, 'j': 36, 'n_samples': 100000, 'seed': 0, 'rpt': 10, 'tpb': 64})
+}
+====================================================================================================================================================================================================================================================
+CPU AND SYSTEM:
+{'cpu_name': 'Intel(R) Xeon(R) CPU E3-1505M v5 @ 2.80GHz',
+ 'os_machine': 'AMD64',
+ 'os_name': 'Windows 10',
+ 'os_version': '10.0.19045',
+ 'ram_size': '63.9 GB'}
+GPU:
+{'async_engine_count': 5,
+ 'can_map_host_memory': 1,
+ 'compute_capability': (5, 2),
+ 'cores_per_SM': 128,
+ 'cores_total': 1280,
+ 'max_block_dim_x': 1024,
+ 'max_block_dim_y': 1024,
+ 'max_block_dim_z': 64,
+ 'max_grid_dim_x': 2147483647,
+ 'max_grid_dim_y': 65535,
+ 'max_grid_dim_z': 65535,
+ 'max_shared_memory_per_block': 49152,
+ 'max_threads_per_block': 1024,
+ 'multiprocessor_count': 10,
+ 'name': 'Quadro M4000M',
+ 'pci_bus_id': 1,
+ 'pci_device_id': 0,
+ 'unified_addressing': 1,
+ 'warp_size': 32}
+====================================================================================================================================================================================================================================================
+RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): 4096
+HEIGHTS IN[:5, :5]:
+[[25.365894  20.296429  14.925921  10.320204   7.3313727]
+ [29.068245   0.         0.         0.         0.       ]
+ [30.553246   0.         0.         0.         0.       ]
+ [29.360521   0.         0.         0.         0.       ]
+ [25.516117   0.         0.         0.         0.       ]]
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 3: sfwf_contraction_cuda_large_atomicmax...
+---
+REPETITION: 1/3:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 8.9645386e-05, iterations: 4200, time: 0.5954604148864746 s]
+---
+REPETITION: 2/3:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 8.9645386e-05, iterations: 4200, time: 0.5275721549987793 s]
+---
+REPETITION: 3/3:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 8.9645386e-05, iterations: 4200, time: 0.5834403038024902 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894  20.296429  14.925921  10.320204   7.3313727]
+ [29.068245  22.56409   17.283594  13.201963  10.526232 ]
+ [30.553246  23.608099  18.4424    14.67783   12.189158 ]
+ [29.360521  22.87266   18.200085  14.877799  12.657004 ]
+ [25.516117  20.321941  16.607481  13.976289  12.190799 ]]
+D_INF OF HEIGHTS VS REF: 0.0
+D_INF (AT STOP) MEAN: 8.96453857421875e-05
+ITERATIONS MEAN: 4200.0
+TIME MEAN: 0.568824291229248 s, STD: 0.029579551780474916 s, STD_%: 5.2%
+SPEEDUP VS REF: 1.0
+====================================================================================================================================================================================================================================================
+MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy...
+---
+REPETITION: 1/1:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+05, seed: 0, chunk_size: 250]
+[10000/100000: border reached at t: 156, (i, j): (0, 30), h: 4.4068646; trajectory time: 0.0 s]
+[20000/100000: border reached at t: 816, (i, j): (0, 24), h: -8.625851; trajectory time: 0.0 s]
+[30000/100000: border reached at t: 123, (i, j): (0, 53), h: 4.34142; trajectory time: 0.0 s]
+[40000/100000: border reached at t: 282, (i, j): (0, 48), h: 12.50522; trajectory time: 0.0 s]
+[50000/100000: border reached at t: 1341, (i, j): (17, 0), h: 10.728842; trajectory time: 0.0 s]
+[60000/100000: border reached at t: 2818, (i, j): (0, 10), h: 19.867311; trajectory time: 0.0 s]
+[70000/100000: border reached at t: 148, (i, j): (0, 48), h: 12.50522; trajectory time: 0.0 s]
+[80000/100000: border reached at t: 2666, (i, j): (34, 0), h: 15.332929; trajectory time: 0.0 s]
+[90000/100000: border reached at t: 246, (i, j): (0, 34), h: 20.380302; trajectory time: 0.0 s]
+[100000/100000: border reached at t: 696, (i, j): (0, 26), h: -3.8553483; trajectory time: 0.00099945068359375 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.172469, T_mean: 751.65596; time: 15.47628140449524 s]
+***
+SUMMARY:
+COMPARISON OF SINGLE HEIGHT VS REF -> h_mean: 8.172469 VS contraction_ref_heights_out[i0, j0]: 8.164693, ABS DIFF: 7.7762604e-03]
+TIME MEAN: 15.47628140449524 s, STD: 0.0 s, STD_%: 0.0%
+SPEEDUP VS REF: 1.0
+====================================================================================================================================================================================================================================================
+MONTE CARLO APPROACH 2: sfwf_mc_cuda...
+---
+REPETITION: 1/3:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+05, seed: 0, rpt: 10, tpb: 64]
+[min_n_generators: 10000, bpg_walk: 157]
+[initialization of random generators...]
+[initialization of random generators done; count: 10048, memory: 0.153 MiB, time: 1.6356468200683594 s]
+[random walks...; bpg_walk: 157, tpb: 64]
+[random walks done; time: 0.20644783973693848 s]
+[mean-reduction...; bpg: 1, tpb: 64]
+[mean-reduction done; time: 0.0009980201721191406 s]
+SFWF MC CUDA DONE. [h_mean: 8.165231, T_mean: 749.8333129882812, n_samples de facto: 1.0e+05; time: 1.8440885543823242 s, time without generators initalization: 0.20844173431396484 s]
+---
+REPETITION: 2/3:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+05, seed: 0, rpt: 10, tpb: 64]
+[min_n_generators: 10000, bpg_walk: 157]
+[initialization of random generators...]
+[initialization of random generators done; count: 10048, memory: 0.153 MiB, time: 0.0019936561584472656 s]
+[random walks...; bpg_walk: 157, tpb: 64]
+[random walks done; time: 0.071807861328125 s]
+[mean-reduction...; bpg: 1, tpb: 64]
+[mean-reduction done; time: 0.0009980201721191406 s]
+SFWF MC CUDA DONE. [h_mean: 8.165231, T_mean: 749.8333129882812, n_samples de facto: 1.0e+05; time: 0.07579731941223145 s, time without generators initalization: 0.07380366325378418 s]
+---
+REPETITION: 3/3:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+05, seed: 0, rpt: 10, tpb: 64]
+[min_n_generators: 10000, bpg_walk: 157]
+[initialization of random generators...]
+[initialization of random generators done; count: 10048, memory: 0.153 MiB, time: 0.001993894577026367 s]
+[random walks...; bpg_walk: 157, tpb: 64]
+[random walks done; time: 0.06682133674621582 s]
+[mean-reduction...; bpg: 1, tpb: 64]
+[mean-reduction done; time: 0.0010030269622802734 s]
+SFWF MC CUDA DONE. [h_mean: 8.165231, T_mean: 749.8333129882812, n_samples de facto: 1.0e+05; time: 0.0708158016204834 s, time without generators initalization: 0.06882190704345703 s]
+***
+SUMMARY:
+COMPARISON OF SINGLE HEIGHT VS REF -> h_mean: 8.165231 VS contraction_ref_heights_out[i0, j0]: 8.164693, ABS DIFF: 5.3787231e-04]
+TIME MEAN: 0.11702243487040202 s, STD: 0.06467519208474833 s, STD_%: 55.3%
+SPEEDUP VS REF: 132.2505502610217
+====================================================================================================================================================================================================================================================
+====================================================================================================================================================================================================================================================
+FINAL SUMMARY:
+CONTRACTION ITERATION APPROACH 1: sfwf_contraction_cpu_numpy OFF.
+CONTRACTION ITERATION APPROACH 2: sfwf_contraction_cuda_small OFF.
+CONTRACTION ITERATION APPROACH 3: sfwf_contraction_cuda_large_atomicmax (REFERENCE) -> MEAN ITERATIONS: 4200.0, MEAN D_INF: 8.96453857421875e-05, MEAN TIME: 0.568824291229248 s, TIME STD: 0.029579551780474916 s, STD_%: 5.2%, SPEED-UP: 1.00
+CONTRACTION ITERATION APPROACH 4: sfwf_contraction_cuda_large_atomicmaxglosten OFF.
+CONTRACTION ITERATION APPROACH 5: sfwf_contraction_cuda_large_hreducemax OFF.
+CONTRACTION ITERATION APPROACH 6: sfwf_contraction_cuda_large_hreducemaxgs OFF.
+CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_gridsync OFF.
+MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy (REFERENCE) -> MEAN TIME: 15.47628140449524 s, TIME STD: 0.0 s,  STD_%: 0.0%, SPEED-UP: 1.00
+MONTE CARLO APPROACH 2: sfwf_mc_cuda -> MEAN TIME: 0.11702243487040202 s, TIME STD: 0.06467519208474833 s,  STD_%: 55.3%, SPEED-UP: 132.25
+SOAP FILM IN A WIRE FRAME DONE. [hash string: 0287451717_23383_692_[7;20;5.0;64;True;1.0e-04;False;False;3;FFTFFFF;TT], time: 19.187413215637207]
