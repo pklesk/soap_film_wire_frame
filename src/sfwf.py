@@ -18,7 +18,7 @@ DEFAULT_TPB_SIDE = 16
 DEFAULT_LAZY_STOP_CHECK = 100
 DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE = 64
 DEFAULT_CORES = 1024
-DEFAULT_MC_CUDA_TPB = 128
+DEFAULT_MC_CUDA_TPB = 512
 DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE = 1000 # TODO 250 # 10**3 (250 for nice plot)
 DEFAULT_MC_CUDA_RPT = 10 # repetitions (walks) per thread (owing to this, fewer random generators can be initialized and CUDA blocks scheduled)                 
                          
