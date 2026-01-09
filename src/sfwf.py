@@ -18,8 +18,8 @@ DEFAULT_TPB_SIDE = 16
 DEFAULT_LAZY_STOP_CHECK = 100
 DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE = 64
 DEFAULT_CORES = 1024
-DEFAULT_MC_CUDA_TPB = 64
-DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE = 250 # 10**3 (250 for nice plot)
+DEFAULT_MC_CUDA_TPB = 128
+DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE = 1000 # TODO 250 # 10**3 (250 for nice plot)
 DEFAULT_MC_CUDA_RPT = 10 # repetitions (walks) per thread (owing to this, fewer random generators can be initialized and CUDA blocks scheduled)                 
                          
 def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
@@ -136,7 +136,7 @@ def sfwf_contraction_cuda_small_job(h_in, eps, h_out, d, k):
         d[0] = shared_d[0, 0]
         k[0] = k_
 
-def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_MC_CUDA_TPB, verbose=True):
+def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, verbose=True):
     if verbose:
         print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}]")
     t1 = time.time()
@@ -578,7 +578,7 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
     Gs = np.empty(n_samples, dtype=np.float32)    
     Ts = np.empty(n_samples, dtype=np.int32)
     trajectories = []
-    verbose_gap = int(np.round(verbose_gap_percent * n_samples))
+    verbose_gap = max(int(np.round(verbose_gap_percent * n_samples)), 1)
     for k in range(n_samples):
         t = 0
         s = np.array([i, j], dtype=np.int32)
@@ -607,9 +607,9 @@ def sfwf_mc_cpu_numpy(heights, i, j, n_samples, seed=None, chunk_size=DEFAULT_MC
         t2_epi = time.time()
         if verbose and (k + 1) % verbose_gap == 0:
             print(f"[{k + 1}/{n_samples}: border reached at t: {Ts[k]}, (i, j): {(int(i_T), int(j_T))}, h: {str(Gs[k])}; trajectory time: {t2_epi - t1_epi} s]")
-    t2 = time.time()
     h_mean = np.mean(Gs)
-    T_mean = np.mean(Ts)
+    t2 = time.time()
+    T_mean = np.mean(Ts) # computation of average trajectory length is not the main task (its time should not be included) 
     if verbose:
         print(f"SFWF MC CPU NUMPY DONE. [h_mean: {str(h_mean)}, T_mean: {T_mean}; time: {t2 - t1} s]")
     return h_mean, T_mean, t2 - t1, trajectories
