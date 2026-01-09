@@ -32,10 +32,10 @@ SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURI
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
 WF_BORDER_N = 64
-CONTRACTION_EPS = 1e-4
+CONTRACTION_EPS = 1e-6
 CONTRACTION_PLOTS = False
 MC_SEED = 0
-MC_SAMPLES = 10**3
+MC_SAMPLES = 10**5
 MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED_CPU_NUMPY = 0
 MC_EXAMPLE_PLOT = False
 MC_EXAMPLE_PLOT_SAMPLES = 3 
