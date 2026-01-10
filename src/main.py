@@ -35,8 +35,8 @@ WF_BORDER_N = 64
 CONTRACTION_EPS = 1e-6
 CONTRACTION_PLOTS = False
 MC_SEED = 0
-MC_SAMPLES = 10**5
-MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED_CPU_NUMPY = 0
+MC_SAMPLES = 10**4
+MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED = 0
 MC_EXAMPLE_PLOT = False
 MC_EXAMPLE_PLOT_SAMPLES = 3 
 APPROACHES_CONTRACTION = { # approaches for contraction iteration
@@ -49,8 +49,8 @@ APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
 APPROACHES_MC = { # approaches for Monte Carlo simulations
-    sfwf.sfwf_mc_cpu_numpy.__name__: (True, sfwf.sfwf_mc_cpu_numpy, DEFAULT_REPETITIONS, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
-    sfwf.sfwf_mc_cuda.__name__: (True, sfwf.sfwf_mc_cuda, DEFAULT_REPETITIONS, {"i": MC_I0_J0[0], "j": MC_I0_J0[1], "n_samples": MC_SAMPLES, "seed": MC_SEED, "rpt": sfwf.DEFAULT_MC_CUDA_RPT, "tpb": sfwf.DEFAULT_MC_CUDA_TPB})
+    sfwf.sfwf_mc_cpu_numpy.__name__: (True, sfwf.sfwf_mc_cpu_numpy, DEFAULT_REPETITIONS, {"chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
+    sfwf.sfwf_mc_cuda.__name__: (True, sfwf.sfwf_mc_cuda, DEFAULT_REPETITIONS, {"rpt": sfwf.DEFAULT_MC_CUDA_RPT, "tpb": sfwf.DEFAULT_MC_CUDA_TPB})
     }            
 
 # wire frame related functions
@@ -98,6 +98,9 @@ if __name__ == "__main__":
         "NUMPY_SINGLE_THREAD": NUMPY_SINGLE_THREAD,
         "CONTRACTION_EPS": CONTRACTION_EPS,
         "CONTRACTION_PLOTS": CONTRACTION_PLOTS,
+        "MC_SEED": MC_SEED,
+        "MC_SAMPLES": MC_SAMPLES, 
+        "MC_I0_J0": MC_I0_J0, 
         "MC_EXAMPLE_PLOT": MC_EXAMPLE_PLOT,
         "MC_EXAMPLE_PLOT_SAMPLES": MC_EXAMPLE_PLOT_SAMPLES,
         **approaches_info(APPROACHES_CONTRACTION),
@@ -188,14 +191,13 @@ if __name__ == "__main__":
             if MC_EXAMPLE_PLOT and approach_name == sfwf.sfwf_mc_cpu_numpy.__name__:
                 approach_extra_params_plot = approach_extra_params.copy()
                 approach_extra_params_plot["collect_trajectories"] = True
-                approach_extra_params_plot["n_samples"] = MC_EXAMPLE_PLOT_SAMPLES
                 print(f"[making additional example run and plot for only {MC_EXAMPLE_PLOT_SAMPLES} trajectories]")
-                h_mean, T_mean, time_, trajectories = approach_function(heights_in, **approach_extra_params_plot)                                
+                h_mean, T_mean, time_, trajectories = approach_function(heights_in, i=MC_I0_J0[0], j=MC_I0_J0[1], n_samples=MC_EXAMPLE_PLOT_SAMPLES, seed=MC_SEED, **approach_extra_params_plot)                                
                 sfwf_plot_mc_trajectories(heights_in, trajectories, h_mean)                        
             for r in range(approach_repetitions):
                 print("---")               
                 print(f"REPETITION: {r + 1}/{approach_repetitions}:")
-                h_mean, T_mean, time_, trajectories = approach_function(heights_in, **approach_extra_params)
+                h_mean, T_mean, time_, trajectories = approach_function(heights_in, i=MC_I0_J0[0], j=MC_I0_J0[1], n_samples=MC_SAMPLES, seed=MC_SEED, **approach_extra_params)
                 if approach_name not in mc_times:
                     mc_times[approach_name] = []
                 mc_times[approach_name].append(time_)                        
@@ -209,10 +211,11 @@ if __name__ == "__main__":
             time_std = np.std(mc_times[approach_name])   
             d_vs_ref = np.abs(h_mean - mc_ref_h_mean)
             speedup_vs_ref = mc_ref_time_mean / time_mean
-            i0, j0 = approach_extra_params["i"], approach_extra_params["j"]
+            i0, j0 = MC_I0_J0
             print("***")
             print("SUMMARY:")
-            print(f"COMPARISON OF SINGLE HEIGHT VS REF -> h_mean: {str(h_mean)} VS contraction_ref_heights_out[i0, j0]: {str(contraction_ref_heights_out[i0, j0])}, ABS DIFF: {np.abs(h_mean - contraction_ref_heights_out[i0, j0]):.7e}]")            
+            if contraction_ref_heights_out is not None:
+                print(f"COMPARISON OF SINGLE HEIGHT VS REF -> h_mean: {str(h_mean)} VS contraction_ref_heights_out[i0, j0]: {str(contraction_ref_heights_out[i0, j0])}, ABS DIFF: {np.abs(h_mean - contraction_ref_heights_out[i0, j0]):.7e}]")            
             print(f"TIME MEAN: {time_mean} s, STD: {time_std} s, STD_%: {(time_std / time_mean) * 100:.1f}%")                        
             print(f"SPEEDUP VS REF: {speedup_vs_ref}")                                                                
     
