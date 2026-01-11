@@ -35,7 +35,7 @@ WF_BORDER_N = 64
 CONTRACTION_EPS = 1e-6
 CONTRACTION_PLOTS = False
 MC_SEED = 0
-MC_SAMPLES = 10**8
+MC_SAMPLES = 10**7
 MC_I0_J0 = (12, 36) # starting point for MC random walks; good for plots: 12, 16 with BORDER_N = 64, SAMPLES_MC = 3 if plot to be generated, MC_SEED = 0
 MC_EXAMPLE_PLOT = False
 MC_EXAMPLE_PLOT_SAMPLES = 3 
