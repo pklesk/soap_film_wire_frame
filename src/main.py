@@ -49,7 +49,7 @@ APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
 APPROACHES_MC = { # approaches for Monte Carlo simulations
-    sfwf.sfwf_mc_cpu_numpy.__name__: (False, sfwf.sfwf_mc_cpu_numpy, DEFAULT_REPETITIONS, {"chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
+    sfwf.sfwf_mc_cpu_numpy.__name__: (True, sfwf.sfwf_mc_cpu_numpy, DEFAULT_REPETITIONS, {"chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
     sfwf.sfwf_mc_cuda.__name__: (True, sfwf.sfwf_mc_cuda, DEFAULT_REPETITIONS, {"rpt": sfwf.DEFAULT_MC_CUDA_RPT, "tpb": sfwf.DEFAULT_MC_CUDA_TPB})
     }            
 
