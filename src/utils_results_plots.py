@@ -7,20 +7,20 @@ if __name__ == "__main__":
     device_names = ["i7-10700@2.90GHz", "RTX 3090", "RTX 5090 Blackwell"]
     
     series = [
-        {"sfwf_contraction_cpu_numpy": [0.036, 0.386, 7.999, 113.925, 4103.018]},
+        {"sfwf_contraction_cpu_numpy": [0.037, 0.396, 7.800, 114.355, 4086.422]},
         {        
-            "sfwf_contraction_cuda_large_atomicmax": [0.075, 0.457, 2.126, 2.090, 22.470],
-            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.075, 0.457, 2.127, 2.084, 18.829],
-            "sfwf_contraction_cuda_large_hreducemax": [0.045, 0.277, 1.278, 1.249, 22.316],
-            "sfwf_contraction_cuda_large_hreducemaxgs": [0.045, 0.278, 1.285, 1.260, 22.428],
-            "sfwf_contraction_cuda_large_gridsync": [0.008, 0.051, 0.823, 4.676, 86.732]
+            "sfwf_contraction_cuda_large_atomicmax": [0.075, 0.471, 2.089, 2.110, 22.557],
+            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.075, 0.470, 2.079, 2.115, 18.943],
+            "sfwf_contraction_cuda_large_hreducemax": [0.045, 0.283, 1.250, 1.277, 22.732],
+            "sfwf_contraction_cuda_large_hreducemaxgs": [0.045, 0.284, 1.265, 1.286, 22.714],
+            "sfwf_contraction_cuda_large_gridsync": [0.008, 0.050, 0.820, 4.660, 88.446]
         },
         {
-            "sfwf_contraction_cuda_large_atomicmax": [0.024, 0.159, 0.723, 0.734, 5.601],
-            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.025, 0.159, 0.718, 0.735, 5.701],
-            "sfwf_contraction_cuda_large_hreducemax": [0.016, 0.100, 0.454, 0.451, 5.321],
-            "sfwf_contraction_cuda_large_hreducemaxgs": [0.016, 0.101, 0.453, 0.455, 5.346],
-            "sfwf_contraction_cuda_large_gridsync": [0.006, 0.041, 0.370, 1.071, 13.796]            
+            "sfwf_contraction_cuda_large_atomicmax": [0.025, 0.158, 0.738, 0.720, 5.606],
+            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.025, 0.157, 0.731, 0.726, 5.726],
+            "sfwf_contraction_cuda_large_hreducemax": [0.016, 0.100, 0.457, 0.447, 5.323],
+            "sfwf_contraction_cuda_large_hreducemaxgs": [0.016, 0.100, 0.460, 0.451, 5.339],
+            "sfwf_contraction_cuda_large_gridsync": [0.006, 0.040, 0.368, 1.064, 13.800]            
         }
     ]
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     }
 
     title_str = "SOAP FILM IN A WIRE FRAME: PLOT OF SPEED-UPS"
-    fig = plt.figure(figsize=(16, 8))
+    fig = plt.figure(figsize=(16, 7))
     try:
         fig.canvas.manager.set_window_title(title_str)
     except AttributeError:
