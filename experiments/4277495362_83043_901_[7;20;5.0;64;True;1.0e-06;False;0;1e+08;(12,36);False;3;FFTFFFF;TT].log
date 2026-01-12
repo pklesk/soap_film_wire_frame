@@ -1,5 +1,5 @@
 SOAP FILM IN A WIRE FRAME...
-HASH STRING: 4277495362_83043_901_[7;20;5.0;64;True;1.0e-06;False;0;1e+08;(12,36)False;3;FFTFFFF;TT]
+HASH STRING: 4277495362_83043_901_[7;20;5.0;64;True;1.0e-06;False;0;1e+08;(12,36);False;3;FFTFFFF;TT]
 ====================================================================================================================================================================================================================================================
 EXPERIMENT INFO:
 {
@@ -402,4 +402,4 @@ CONTRACTION ITERATION APPROACH 6: sfwf_contraction_cuda_large_hreducemaxgs OFF.
 CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_gridsync OFF.
 MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy (REFERENCE) -> MEAN TIME: 2887.567349410057 s, TIME STD: 2.4251720049441077 s,  STD_%: 0.1%, SPEED-UP: 1.00
 MONTE CARLO APPROACH 2: sfwf_mc_cuda -> MEAN TIME: 2.1820241928100588 s, TIME STD: 0.005504695992791694 s,  STD_%: 0.3%, SPEED-UP: 1323.34
-SOAP FILM IN A WIRE FRAME DONE. [hash string: 4277495362_83043_901_[7;20;5.0;64;True;1.0e-06;False;0;1e+08;(12,36)False;3;FFTFFFF;TT], time: 28907.71316075325]
+SOAP FILM IN A WIRE FRAME DONE. [hash string: 4277495362_83043_901_[7;20;5.0;64;True;1.0e-06;False;0;1e+08;(12,36);False;3;FFTFFFF;TT], time: 28907.71316075325]

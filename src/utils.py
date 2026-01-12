@@ -93,7 +93,7 @@ def experiment_hash_str(experiment_info, c_props, g_props, all_hs_digits=10, exp
     approaches_flags_str = ""
     suffix = f"{experiment_info['SEED']};{experiment_info['WF_FOURIER_N']};{experiment_info['WF_FOURIER_AMPLITUDE']};{experiment_info['WF_BORDER_N']};"
     suffix += f"{experiment_info['NUMPY_SINGLE_THREAD']};{experiment_info['CONTRACTION_EPS']:.1e};{experiment_info['CONTRACTION_PLOTS']};"
-    suffix += f"{experiment_info['MC_SEED']};{experiment_info['MC_SAMPLES']:.0e};{experiment_info['MC_I0_J0']}"
+    suffix += f"{experiment_info['MC_SEED']};{experiment_info['MC_SAMPLES']:.0e};{experiment_info['MC_I0_J0']};"
     suffix += f"{experiment_info['MC_EXAMPLE_PLOT']};{experiment_info['MC_EXAMPLE_PLOT_SAMPLES']};"
     suffix = suffix.replace(" ", "")    
     for key in experiment_info.keys():
