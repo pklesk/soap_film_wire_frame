@@ -32,7 +32,7 @@ if __name__ == "__main__":
         "gridsync": "#FF0000"            
     }
 
-    title_str = "SOAP FILM IN A WIRE FRAME: PLOT OF SPEED-UPS"
+    title_str = "SOAP FILM IN A WIRE FRAME: LOG-LOG PLOT OF SPEED-UPS"
     fig = plt.figure(figsize=(16, 7))
     try:
         fig.canvas.manager.set_window_title(title_str)

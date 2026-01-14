@@ -536,7 +536,7 @@ def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):
                 shared_h[tip1, cuda.blockDim.y + 1] = src[i, j + 1]    
             cuda.syncthreads()
             new_val = hij    
-            if i > 0 and i < m - 1 and j > 0 and j < n - 1 :
+            if i > 0 and i < m - 1 and j > 0 and j < n - 1:
                 new_val = float32(0.25) * (shared_h[tip1 - 1, tjp1] + shared_h[tip1 + 1, tjp1] + shared_h[tip1 , tjp1 - 1] + shared_h[tip1, tjp1 + 1]) # contraction
             if i < m and j < n:
                 dst[i, j] = new_val 
