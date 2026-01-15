@@ -199,7 +199,7 @@ def sfwf_contraction_cuda_large_atomicmax_job(h_in, h_out, d):
         new_val = float32(0.25) * (shared_h[tip1 - 1, tjp1] + shared_h[tip1 + 1, tjp1] + shared_h[tip1 , tjp1 - 1] + shared_h[tip1, tjp1 + 1]) # contraction
     if i < m and j < n:
         h_out[i, j] = new_val
-    cuda.syncthreads() # REDUNDANT
+    # cuda.syncthreads() # REDUNDANT
     shared_d[t] = math.fabs(new_val - hij)
     tpb = cuda.blockDim.x * cuda.blockDim.y
     stride = tpb >> 1       
@@ -360,7 +360,7 @@ def sfwf_contraction_cuda_large_hreducemax_reduce(d):
         if e < job_blocks:
             shared_d[t] = max(shared_d[t], d[e])
         e += tpb    
-    cuda.syncthreads() # REDUNDANT
+    # cuda.syncthreads() # REDUNDANT
     stride = tpb >> 1       
     cuda.syncthreads()
     while stride > 0: # max-reduction        
@@ -425,7 +425,7 @@ def sfwf_contraction_cuda_large_hreducemaxgs_reduce1(d):
         if e < bpg_i_j:
             shared_d[t] = max(shared_d[t], d[e])
         e += grid_stride
-    cuda.syncthreads() # REDUNDANT
+    # cuda.syncthreads() # REDUNDANT
     stride = tpb >> 1       
     cuda.syncthreads()
     while stride > 0: # max-reduction        
@@ -442,7 +442,7 @@ def sfwf_contraction_cuda_large_hreducemaxgs_reduce2(d, size):
     tpb = cuda.blockDim.x 
     t = cuda.threadIdx.x    
     shared_d[t] = d[t] if t < size else float32(0.0)
-    cuda.syncthreads() # REDUNDANT
+    # cuda.syncthreads() # REDUNDANT
     stride = tpb >> 1       
     cuda.syncthreads()
     while stride > 0: # max-reduction        
@@ -540,7 +540,7 @@ def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):
                 new_val = float32(0.25) * (shared_h[tip1 - 1, tjp1] + shared_h[tip1 + 1, tjp1] + shared_h[tip1 , tjp1 - 1] + shared_h[tip1, tjp1 + 1]) # contraction
             if i < m and j < n:
                 dst[i, j] = new_val 
-            cuda.syncthreads() # REDUNDANT
+            # cuda.syncthreads() # REDUNDANT
             shared_d[t] = math.fabs(new_val - hij)        
             stride = tpb >> 1
             cuda.syncthreads()
@@ -551,8 +551,8 @@ def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):
                 stride >>= 1
             if t == 0:
                 cuda.atomic.max(d, 0, shared_d[0])
-            if e < ept - 1: # REDUNDANT
-                cuda.syncthreads() # REDUNDANT
+            # if e < ept - 1: # REDUNDANT
+               # cuda.syncthreads() # REDUNDANT
         g.sync()
         if b == 0 and t == 0:
             k[0] += 1
