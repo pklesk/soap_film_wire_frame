@@ -31,7 +31,7 @@ DEFAULT_REPETITIONS = 10
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 100
+WF_BORDER_N = 32
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
@@ -126,9 +126,10 @@ if __name__ == "__main__":
 
     border, heights_in = random_wire_frame(WF_FOURIER_N, WF_FOURIER_AMPLITUDE, WF_BORDER_N, seed=SEED)
     print(f"RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): {WF_BORDER_N**2}")
-    print(f"HEIGHTS IN[:5, :5]:\n{heights_in[:5, :5]}")        
+    if heights_in.shape[0] >= 5 and heights_in.shape[1] >= 5:
+        print(f"HEIGHTS IN[:5, :5]:\n{heights_in[:5, :5]}")        
     if CONTRACTION_PLOTS:
-        sfwf_plot(border, heights_in, "WIRE FRAME (INPUT)")        
+        sfwf_plot(border, heights_in, "WIRE FRAME (INPUT)")
     
     # about to execute contraction iteration approaches
     contraction_ref_approach_name = None
@@ -167,7 +168,8 @@ if __name__ == "__main__":
             speedup_vs_ref = contraction_ref_time_mean / time_mean
             print("***")
             print("SUMMARY:")
-            print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
+            if heights_out.shape[0] >= 5 and heights_out.shape[1] >= 5:
+                print(f"HEIGHTS OUT[:5, :5]:\n{heights_out[:5, :5]}")
             print(f"D_INF OF HEIGHTS VS REF: {str(d_vs_ref)}")
             print(f"D_INF (AT STOP) MEAN: {d_mean}")
             print(f"ITERATIONS MEAN: {k_mean}")                    

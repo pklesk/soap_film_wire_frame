@@ -7,20 +7,20 @@ if __name__ == "__main__":
     device_names = ["i7-10700@2.90GHz", "RTX 3090", "RTX 5090 Blackwell"]
     
     series = [
-        {"sfwf_contraction_cpu_numpy": [0.037, 0.396, 7.800, 114.355, 4086.422]},
+        {"sfwf_contraction_cpu_numpy": [0.038, 0.383, 7.736, 112.205, 4113.502]},
         {        
-            "sfwf_contraction_cuda_large_atomicmax": [0.075, 0.471, 2.089, 2.110, 22.557],
-            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.075, 0.470, 2.079, 2.115, 18.943],
-            "sfwf_contraction_cuda_large_hreducemax": [0.045, 0.283, 1.250, 1.277, 22.732],
-            "sfwf_contraction_cuda_large_hreducemaxgs": [0.045, 0.284, 1.265, 1.286, 22.714],
-            "sfwf_contraction_cuda_large_gridsync": [0.008, 0.050, 0.820, 4.660, 88.446]
+            "sfwf_contraction_cuda_large_atomicmax": [0.074, 0.463, 2.127, 2.077, 22.485],
+            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.073, 0.464, 2.127, 2.086, 18.999],
+            "sfwf_contraction_cuda_large_hreducemax": [0.044, 0.278, 1.276, 1.243, 22.801],
+            "sfwf_contraction_cuda_large_hreducemaxgs": [0.045, 0.282, 1.293, 1.256, 22.936],
+            "sfwf_contraction_cuda_large_gridsync": [0.008, 0.052, 0.756, 4.337, 80.072]
         },
         {
-            "sfwf_contraction_cuda_large_atomicmax": [0.025, 0.158, 0.738, 0.720, 5.606],
-            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.025, 0.157, 0.731, 0.726, 5.726],
-            "sfwf_contraction_cuda_large_hreducemax": [0.016, 0.100, 0.457, 0.447, 5.323],
-            "sfwf_contraction_cuda_large_hreducemaxgs": [0.016, 0.100, 0.460, 0.451, 5.339],
-            "sfwf_contraction_cuda_large_gridsync": [0.006, 0.040, 0.368, 1.064, 13.800]            
+            "sfwf_contraction_cuda_large_atomicmax": [0.025, 0.159, 0.725, 0.724, 5.552],
+            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.025, 0.160, 0.724, 0.723, 5.717],
+            "sfwf_contraction_cuda_large_hreducemax": [0.016, 0.100, 0.456, 0.448, 5.321],
+            "sfwf_contraction_cuda_large_hreducemaxgs": [0.016, 0.101, 0.456, 0.452, 5.336],
+            "sfwf_contraction_cuda_large_gridsync": [0.006, 0.042, 0.350, 0.960, 12.146]            
         }
     ]
 
