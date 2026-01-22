@@ -4,7 +4,7 @@ __email__ = "pklesk@zut.edu.pl"
 import numpy as np
 import time
 from numba import cuda
-from numba import void, int8, int16, int32, float32, boolean
+from numba import void, int8, int32, float32, boolean
 from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32, xoroshiro128p_type
 from numba.core.errors import NumbaPerformanceWarning
 import math
@@ -194,7 +194,7 @@ def sfwf_contraction_cuda_large_atomicmax_job(h_in, h_out, d):
     elif tj == cuda.blockDim.y - 1 and j < n - 1 and i < m:
         shared_h[tip1, cuda.blockDim.y + 1] = h_in[i, j + 1]    
     cuda.syncthreads()
-    if i > 0 and i < m - 1 and j > 0 and j < n - 1 :
+    if i > 0 and i < m - 1 and j > 0 and j < n - 1:
         new_val = float32(0.25) * (shared_h[tip1 - 1, tjp1] + shared_h[tip1 + 1, tjp1] + shared_h[tip1 , tjp1 - 1] + shared_h[tip1, tjp1 + 1]) # contraction
     if i < m and j < n:
         h_out[i, j] = new_val
@@ -383,6 +383,8 @@ def sfwf_contraction_cuda_large_hreducemaxgs(heights_in, eps, lazy_stop_check=DE
     bpg_gs = min(max(cores // tpb_gs, 1), tpb_reduce)   
     d = np.zeros(bpg_i_j, dtype=np.float32)
     dev_d = cuda.to_device(d)
+    d_gs = np.zeros(bpg_gs, dtype=np.float32)
+    dev_d_gs = cuda.to_device(d_gs)
     if verbose:       
         print(f"[job bpg: {bpg}, tpb: {tpb_job}]")
         print(f"[reduce1 (grid-stride) bpg: {bpg_gs}, tpb: {tpb_gs}]")
@@ -392,24 +394,24 @@ def sfwf_contraction_cuda_large_hreducemaxgs(heights_in, eps, lazy_stop_check=DE
         sfwf_contraction_cuda_large_hreducemax_job[bpg, tpb_job](dev_h_in, dev_h_out, dev_d) # same main kernal as in simple hreducemax
         k += 1
         if k % lazy_stop_check == 0:
-            sfwf_contraction_cuda_large_hreducemaxgs_reduce1[bpg_gs, tpb_gs](dev_d)
-            sfwf_contraction_cuda_large_hreducemaxgs_reduce2[1, tpb_reduce](dev_d, min(bpg_gs, bpg_i_j))
-            dev_d.copy_to_host(ary=d)
+            sfwf_contraction_cuda_large_hreducemaxgs_reduce1[bpg_gs, tpb_gs](dev_d, dev_d_gs)
+            sfwf_contraction_cuda_large_hreducemaxgs_reduce2[1, tpb_reduce](dev_d_gs)
+            dev_d_gs.copy_to_host(ary=d_gs)
             cuda.synchronize()
-            if d[0] <= eps:
+            if d_gs[0] <= eps:
                 break        
         tmp = dev_h_in
         dev_h_in = dev_h_out
         dev_h_out = tmp        
     heights_out = dev_h_out.copy_to_host()
-    d = d[0]    
+    d = d_gs[0]    
     t2 = time.time()
     if verbose:
         print(f"SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGS DONE. [d_inf: {str(d)} iterations: {k}, time: {t2 - t1} s]")    
     return heights_out, d, k, t2 - t1
 
-@cuda.jit(void(float32[:]))    
-def sfwf_contraction_cuda_large_hreducemaxgs_reduce1(d):         
+@cuda.jit(void(float32[:], float32[:]))    
+def sfwf_contraction_cuda_large_hreducemaxgs_reduce1(d, d_gs):         
     shared_d = cuda.shared.array(128, dtype=float32) # corresponds to DEFAULT_TPB_GS
     tpb = cuda.blockDim.x
     bpg_i_j = d.shape[0]
@@ -430,14 +432,14 @@ def sfwf_contraction_cuda_large_hreducemaxgs_reduce1(d):
         cuda.syncthreads()
         stride >>= 1
     if t == 0:    
-        d[cuda.blockIdx.x] = shared_d[0]
+        d_gs[cuda.blockIdx.x] = shared_d[0]
 
-@cuda.jit(void(float32[:], int16))    
-def sfwf_contraction_cuda_large_hreducemaxgs_reduce2(d, size):
+@cuda.jit(void(float32[:]))    
+def sfwf_contraction_cuda_large_hreducemaxgs_reduce2(d_gs):
     shared_d = cuda.shared.array(512, dtype=float32) # corresponds to DEFAULT_TPB
     tpb = cuda.blockDim.x 
-    t = cuda.threadIdx.x    
-    shared_d[t] = d[t] if t < size else float32(0.0)
+    t = cuda.threadIdx.x
+    shared_d[t] = d_gs[t] if t < d_gs.shape[0] else float32(0.0)
     stride = tpb >> 1       
     cuda.syncthreads()
     while stride > 0: # max-reduction        
@@ -446,7 +448,7 @@ def sfwf_contraction_cuda_large_hreducemaxgs_reduce2(d, size):
         cuda.syncthreads()
         stride >>= 1
     if t == 0:    
-        d[0] = shared_d[0]
+        d_gs[0] = shared_d[0]
 
 def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_SIDE, max_bpg_gridsync=None, verbose=True):
     if verbose:
