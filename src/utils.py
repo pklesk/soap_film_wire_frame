@@ -48,7 +48,7 @@ def gpu_props():
     props["unified_addressing"] = gpu.UNIFIED_ADDRESSING
     props["pci_bus_id"] = gpu.PCI_BUS_ID
     props["pci_device_id"] = gpu.PCI_DEVICE_ID
-    props["compute_capability"] = gpu.compute_capability            
+    props["compute_capability"] = gpu.compute_capability
     CC_CORES_PER_SM_DICT = {
         (2, 0): 32,
         (2, 1): 48,
@@ -66,7 +66,7 @@ def gpu_props():
         (8, 7): 128,
         (8, 9): 128,
         (9, 0): 128,
-        (12, 0) : 128
+        (12, 0): 128
         }
     props["cores_per_SM"] = CC_CORES_PER_SM_DICT.get(gpu.compute_capability)
     props["cores_total"] = props["cores_per_SM"] * gpu.MULTIPROCESSOR_COUNT
