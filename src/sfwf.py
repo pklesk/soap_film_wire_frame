@@ -73,6 +73,7 @@ def sfwf_contraction_cuda_small_job(h_in, eps, h_out, d, k):
     t = cuda.threadIdx.x
     m, n = h_in.shape
     m_n = int32(m * n)
+    it, jt = t // n, t % n
     ept = (m_n + tpb - 1) // tpb    
     k_ = int32(0)
     e = t
@@ -104,22 +105,21 @@ def sfwf_contraction_cuda_small_job(h_in, eps, h_out, d, k):
             if e < m_n:    
                 i, j = e // n, e % n            
                 shared_d[i, j] = math.fabs(shared_h[i, j] - shared_d[i, j]) # using shared_d to store absolute differences
-            e += tpb            
+            e += tpb
+        cuda.syncthreads()  
         for q in range(1, ept): # gathering max point-wise differences within first tpb entries of array (preparation before reduction) 
             e = t + q * tpb
-            if e < m_n:
-                i_t, j_t = t // n, t % n
-                i_e, j_e = e // n, e % n                            
-                shared_d[i_t, j_t] = max(shared_d[i_t, j_t], shared_d[i_e, j_e])                        
+            if e < m_n:                
+                ie, je = e // n, e % n                            
+                shared_d[it, jt] = max(shared_d[it, jt], shared_d[ie, je])                        
         stride = tpb >> 1  
         cuda.syncthreads()
         while stride > 0: # max-reduction (over 2d shared array)
             if t < stride:
                 t_s = t + stride
-                if t_s < m_n:
-                    i, j = t // n, t % n                
+                if t_s < m_n:             
                     i_s, j_s = t_s // n, t_s % n                
-                    shared_d[i, j] = max(shared_d[i, j], shared_d[i_s, j_s])
+                    shared_d[it, jt] = max(shared_d[it, jt], shared_d[i_s, j_s])
             cuda.syncthreads()
             stride >>= 1
         k_ += 1

@@ -31,7 +31,7 @@ DEFAULT_REPETITIONS = 10
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 100
+WF_BORDER_N = 32
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
@@ -46,7 +46,7 @@ APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cuda_large_atomicmaxglosten.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmaxglosten, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),
     sfwf.sfwf_contraction_cuda_large_hreducemax.__name__: (True, sfwf.sfwf_contraction_cuda_large_hreducemax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB}),    
     sfwf.sfwf_contraction_cuda_large_hreducemaxgs.__name__: (True, sfwf.sfwf_contraction_cuda_large_hreducemaxgs, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE, "tpb_reduce": sfwf.DEFAULT_TPB, "cores": g_props["cores_total"]}),
-    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (True, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
+    sfwf.sfwf_contraction_cuda_large_gridsync.__name__: (False, sfwf.sfwf_contraction_cuda_large_gridsync, DEFAULT_REPETITIONS, {"tpb_side": sfwf.DEFAULT_TPB_SIDE})
     }
 APPROACHES_MC = { # approaches for Monte Carlo simulations
     sfwf.sfwf_mc_cpu_numpy.__name__: (False, sfwf.sfwf_mc_cpu_numpy, DEFAULT_REPETITIONS, {"chunk_size": sfwf.DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE}),
