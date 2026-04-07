@@ -3,7 +3,7 @@ __email__ = "pklesk@zut.edu.pl"
 
 import numpy as np
 import time
-from numba import cuda
+from numba import cuda, jit, prange
 from numba import void, int8, int32, float32, boolean
 from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32, xoroshiro128p_type
 from numba.core.errors import NumbaPerformanceWarning
@@ -46,6 +46,32 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
     if verbose:
         print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
     return heights_out, d, k, t2 - t1
+
+def sfwf_contraction_cpu_numba_parallel(heights_in, eps, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: {eps}]")
+    t1 = time.time()
+    k = 0    
+    d = np.inf
+    h_in = np.copy(heights_in)
+    h_out = np.copy(heights_in)
+    while True:
+        sfwf_contraction_cpu_numba_parallel_job(h_in, h_out)
+        d = np.max(np.abs(h_out - h_in))
+        k += 1        
+        if d <= eps:
+            break
+        h_in, h_out = h_out, h_in        
+    t2 = time.time()
+    if verbose:
+        print(f"SFWF CONTRACTION CPU NUMBA PARALLEL. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
+    return h_out, d, k, t2 - t1
+
+@jit(void(float32[:, :], float32[:, :]), nopython=True, parallel=True)
+def sfwf_contraction_cpu_numba_parallel_job(h_in, h_out):
+    for i in prange(1, h_in.shape[0] - 1):
+        for j in prange(1, h_in.shape[1] - 1):
+            h_out[i, j] = 0.25 * (h_in[i - 1, j] + h_in[i + 1, j] + h_in[i, j - 1] + h_in[i, j + 1])
 
 def sfwf_contraction_cuda_small(heights_in, eps, tpb, verbose=True):
     if verbose:
@@ -172,7 +198,6 @@ def sfwf_contraction_cuda_large_atomicmax(heights_in, eps, lazy_stop_check=DEFAU
 @cuda.jit(void(float32[:]))    
 def sfwf_contraction_cuda_large_atomicmax_reset(d): # called exactly for 1 thread
     d[0] = float32(0.0) 
-
 
 @cuda.jit(void(float32[:, :], float32[:, :], float32[:]))    
 def sfwf_contraction_cuda_large_atomicmax_job(h_in, h_out, d):       
