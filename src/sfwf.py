@@ -22,7 +22,7 @@ DEFAULT_MC_CUDA_TPB = 128
 DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE = 1000 # 1000 (250 for sample plot)
 DEFAULT_MC_CUDA_RPT = 10 # repetitions (walks) per thread (owing to this, fewer random generators can be initialized and CUDA blocks scheduled)                 
                          
-def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
+def sfwf_contraction_cpu_numpy_old(heights_in, eps, verbose=True):
     if verbose:
         print(f"SFWF CONTRACTION CPU NUMPY... [eps: {eps}]")
     t1 = time.time()
@@ -37,6 +37,32 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
         h_new = 0.25 * (h_t + h_b + h_l + h_r)
         d = np.max(np.abs(h_new - h))
         h = h_new
+        k += 1
+        if d <= eps:
+            break        
+    t2 = time.time()
+    heights_out = np.copy(heights_in)
+    heights_out[1:-1, 1:-1] = h
+    if verbose:
+        print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
+    return heights_out, d, k, t2 - t1
+
+def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CPU NUMPY... [eps: {eps}]")
+    t1 = time.time()
+    h_full = np.copy(heights_in) 
+    h = h_full[1:-1, 1:-1]
+    k = 0    
+    d = np.inf         
+    while True:
+        h_t = h_full[0:-2, 1:-1]
+        h_b = h_full[2:, 1:-1]
+        h_l = h_full[1:-1, 0:-2]
+        h_r = h_full[1:-1, 2:]        
+        h_new = 0.25 * (h_t + h_b + h_l + h_r)
+        d = np.max(np.abs(h_new - h))        
+        h[:] = h_new[:] 
         k += 1
         if d <= eps:
             break        
