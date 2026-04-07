@@ -209,6 +209,78 @@ def sfwf_contraction_cuda_large_atomicmax_job(h_in, h_out, d):
         stride >>= 1
     if t == 0:
         cuda.atomic.max(d, 0, shared_d[0])
+
+
+def sfwf_contraction_cuda_large_atomicmaxnew(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAXNEW... [eps: {eps}, lazy_stop_check: {lazy_stop_check}, tpb_side: {tpb_side}]")
+    t1 = time.time()
+    dev_h_in = cuda.to_device(heights_in)
+    dev_h_out = cuda.device_array_like(heights_in)
+    d = np.zeros(1, dtype=np.float32)
+    dev_d = cuda.to_device(d)   
+    tpb = (tpb_side, tpb_side)
+    bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
+    bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side      
+    bpg = (bpg_j, bpg_i)
+    if verbose:
+        print(f"[bpg: {bpg}, tpb: {tpb}]")
+    k = 0
+    while True:
+        sfwf_contraction_cuda_large_atomicmax_reset[1, 1](dev_d)
+        sfwf_contraction_cuda_large_atomicmaxnew_job[bpg, tpb](dev_h_in, dev_h_out, dev_d)
+        k += 1
+        if k % lazy_stop_check == 0:        
+            dev_d.copy_to_host(ary=d)
+            cuda.synchronize()
+            if d[0] <= eps:
+                break
+        tmp = dev_h_in
+        dev_h_in = dev_h_out
+        dev_h_out = tmp
+    heights_out = dev_h_out.copy_to_host()
+    d = d[0]    
+    t2 = time.time()
+    if verbose:
+        print(f"SFWF CONTRACTION CUDA LARGE ATOMICMAXNEW DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")    
+    return heights_out, d, k, t2 - t1
+
+@cuda.jit(void(float32[:, :], float32[:, :], float32[:]))    
+def sfwf_contraction_cuda_large_atomicmaxnew_job(h_in, h_out, d):       
+    shared_h = cuda.shared.array((16 + 2, 16 + 2), dtype=float32) # corresponds to DEFAULT_TPB_SIDE + padding for neighbors' values 
+    shared_d = cuda.shared.array(16**2, dtype=float32) # corresponds to DEFAULT_TPB_SIDE**2
+    j, i = cuda.grid(2)
+    tj, ti = cuda.threadIdx.x, cuda.threadIdx.y
+    tip1, tjp1 = ti + 1, tj + 1
+    t = ti * cuda.blockDim.y + tj 
+    m, n = h_in.shape
+    hij = h_in[i, j] if (i < m and j < n) else float32(0.0)
+    shared_h[tip1, tjp1] = hij
+    new_val = hij
+    if ti == 0 and i > 0 and j < n:
+        shared_h[0, tjp1] = h_in[i - 1, j]
+    elif ti == cuda.blockDim.x - 1 and i < m - 1 and j < n:
+        shared_h[cuda.blockDim.x + 1, tjp1] = h_in[i + 1, j]        
+    if tj == 0 and j > 0 and i < m:
+        shared_h[tip1, 0] = h_in[i, j - 1]
+    elif tj == cuda.blockDim.y - 1 and j < n - 1 and i < m:
+        shared_h[tip1, cuda.blockDim.y + 1] = h_in[i, j + 1]    
+    cuda.syncthreads()
+    if i > 0 and i < m - 1 and j > 0 and j < n - 1:
+        new_val = float32(0.25) * (shared_h[tip1 - 1, tjp1] + shared_h[tip1 + 1, tjp1] + shared_h[tip1 , tjp1 - 1] + shared_h[tip1, tjp1 + 1]) # contraction
+    if i < m and j < n:
+        h_out[i, j] = new_val
+    shared_d[t] = math.fabs(new_val - hij)
+    tpb = cuda.blockDim.x * cuda.blockDim.y
+    stride = tpb >> 1       
+    cuda.syncthreads()
+    while stride > 0: # max-reduction        
+        if t < stride:                        
+            shared_d[t] = max(shared_d[t], shared_d[t + stride])
+        cuda.syncthreads()
+        stride >>= 1
+    if t == 0:
+        cuda.atomic.max(d, 0, shared_d[0])
         
 def sfwf_contraction_cuda_large_atomicmaxglosten(heights_in, eps, lazy_stop_check=DEFAULT_LAZY_STOP_CHECK, tpb_side=DEFAULT_TPB_SIDE, verbose=True):
     if verbose:
