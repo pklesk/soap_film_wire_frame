@@ -48,33 +48,6 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
         print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
     return heights_out, d, k, t2 - t1
 
-def sfwf_contraction_cpu_numpy_blaslike(heights_in, eps, verbose=True):
-    if verbose:
-        print(f"SFWF CONTRACTION CPU NUMPY BLASLIKE... [eps: {eps}]")
-    t1 = time.time()    
-    h_full = np.copy(heights_in)
-    m, n = h_full.shape    
-    A = np.eye(m, k=-1) + np.eye(m, k=1)
-    B = np.eye(n, k=-1) + np.eye(n, k=1)    
-    A[0, 1] = A[-1, -2] = 0 
-    B[1, 0] = B[-2, -1] = 0
-    k = 0
-    while True:
-        h_new_full = 0.25 * (A @ h_full + h_full @ B)
-        h_new_full[0, :] = heights_in[0, :]
-        h_new_full[-1, :] = heights_in[-1, :]
-        h_new_full[:, 0] = heights_in[:, 0]
-        h_new_full[:, -1] = heights_in[:, -1]        
-        d = np.max(np.abs(h_new_full - h_full))
-        h_full = h_new_full
-        k += 1        
-        if d <= eps: 
-            break
-    t2 = time.time()
-    if verbose:
-        print(f"SFWF CONTRACTION CPU NUMPY BLASLIKE DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")        
-    return h_full, d, k, t2 - t1
-
 def sfwf_contraction_cpu_numba_parallel(heights_in, eps, verbose=True):
     if verbose:
         print(f"SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: {eps}]")
@@ -529,7 +502,7 @@ def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_S
         bpg_i -= 1
     if bpg_i * bpg_j > max_bpg_gridsync:
         bpg_j -= 1
-    bpg = (bpg_i, bpg_j)
+    bpg = (bpg_j, bpg_i)
     tpg_i = bpg_i * tpb_side
     tpg_j = bpg_j * tpb_side
     ept_i = (heights_in.shape[0] + tpg_i - 1) // tpg_i
@@ -552,117 +525,6 @@ def sfwf_contraction_cuda_large_gridsync(heights_in, eps, tpb_side=DEFAULT_TPB_S
 
 @cuda.jit(void(float32[:, :], float32, float32[:, :], float32[:], int32[:], boolean[:]))    
 def sfwf_contraction_cuda_large_gridsync_job(h_in, eps, h_out, d, k, stop_all):           
-    shared_h = cuda.shared.array((16 + 2, 16 + 2), dtype=float32) # corresponds to DEFAULT_TPB_SIDE + padding for neighbors' values 
-    shared_d = cuda.shared.array(16**2, dtype=float32) # corresponds to DEFAULT_TPB_SIDE**2    
-    ti, tj = cuda.threadIdx.x, cuda.threadIdx.y
-    i0, j0 = cuda.grid(2)
-    b = cuda.blockIdx.x * cuda.gridDim.y + cuda.blockIdx.y # block 1d index
-    g = cuda.cg.this_grid() 
-    tip1, tjp1 = ti + 1, tj + 1
-    t = ti * cuda.blockDim.y + tj 
-    m, n = h_in.shape
-    tpb = cuda.blockDim.x * cuda.blockDim.y
-    tpg_i = cuda.gridDim.x * cuda.blockDim.x
-    tpg_j = cuda.gridDim.y * cuda.blockDim.y
-    ept_i = (m + tpg_i - 1) // tpg_i
-    ept_j = (n + tpg_j - 1) // tpg_j
-    ept = ept_i * ept_j
-    mg_j = (n + tpg_j - 1) // tpg_j # super-grid dim j
-    src = h_in
-    dst = h_out
-    while True: 
-        for e in range(ept):
-            ei, ej = e // mg_j, e % mg_j
-            i = i0 + ei * tpg_i
-            j = j0 + ej * tpg_j            
-            hij = src[i, j] if (i < m and j < n) else float32(0.0)
-            shared_h[tip1, tjp1] = hij
-            if ti == 0 and i > 0 and i < m and j < n:
-                shared_h[0, tjp1] = src[i - 1, j]
-            if ti == cuda.blockDim.x - 1 and i < m - 1 and j < n:
-                shared_h[cuda.blockDim.x + 1, tjp1] = src[i + 1, j]        
-            if tj == 0 and j > 0 and j < n and i < m:
-                shared_h[tip1, 0] = src[i, j - 1]
-            if tj == cuda.blockDim.y - 1 and j < n - 1 and i < m:
-                shared_h[tip1, cuda.blockDim.y + 1] = src[i, j + 1]    
-            cuda.syncthreads()
-            new_val = hij    
-            if i > 0 and i < m - 1 and j > 0 and j < n - 1:
-                new_val = float32(0.25) * (shared_h[tip1 - 1, tjp1] + shared_h[tip1 + 1, tjp1] + shared_h[tip1 , tjp1 - 1] + shared_h[tip1, tjp1 + 1]) # contraction
-            if i < m and j < n:
-                dst[i, j] = new_val 
-            shared_d[t] = math.fabs(new_val - hij)        
-            stride = tpb >> 1
-            cuda.syncthreads()
-            while stride > 0: # max-reduction        
-                if t < stride:
-                    shared_d[t] = max(shared_d[t], shared_d[t + stride])
-                cuda.syncthreads()
-                stride >>= 1
-            if t == 0:
-                cuda.atomic.max(d, 0, shared_d[0])
-        g.sync()
-        if b == 0 and t == 0:
-            k[0] += 1
-            if d[0] <= eps:
-                stop_all[0] = True
-            else:
-                d[0] = float32(0.0)
-        g.sync() 
-        if stop_all[0]:
-            break
-        tmp = src
-        src = dst
-        dst = tmp
-
-def sfwf_contraction_cuda_large_gridsyncnew(heights_in, eps, tpb_side=DEFAULT_TPB_SIDE, max_bpg_gridsync=None, verbose=True):
-    if verbose:
-        print(f"SFWF CONTRACTION CUDA LARGE GRIDSYNCNEW... [eps: {eps}, tpb_side: {tpb_side}, assumed max_bpg_gridsync: {max_bpg_gridsync}]")
-    t1 = time.time()
-    dev_h_in = cuda.to_device(heights_in)
-    dev_h_out = cuda.device_array_like(heights_in)
-    tpb = (tpb_side, tpb_side)
-    bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
-    bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side
-    if verbose:
-        print(f"[wanted ideal bpg: {(bpg_i, bpg_j)}]")
-    if max_bpg_gridsync is None:
-        t1_discover = time.time()
-        compiled = sfwf_contraction_cuda_large_gridsyncnew_job.overloads[(float32[:, :], float32, float32[:, :], float32[:], int32[:], boolean[:],)]
-        max_bpg_gridsync = compiled.max_cooperative_grid_blocks(tpb)
-        t2_discover = time.time()
-        if verbose:
-            print(f"[discovered max_bpg_gridsync: {max_bpg_gridsync}; time: {t2_discover - t1_discover} s]")
-    ratio = min(np.sqrt(max_bpg_gridsync / (bpg_i * bpg_j)), 1.0)
-    bpg_i = max(int(np.ceil(ratio * bpg_i)), 1)
-    bpg_j = max(int(np.ceil(ratio * bpg_j)), 1)
-    if bpg_i * bpg_j > max_bpg_gridsync:
-        bpg_i -= 1
-    if bpg_i * bpg_j > max_bpg_gridsync:
-        bpg_j -= 1
-    bpg = (bpg_j, bpg_i)
-    tpg_i = bpg_i * tpb_side
-    tpg_j = bpg_j * tpb_side
-    ept_i = (heights_in.shape[0] + tpg_i - 1) // tpg_i
-    ept_j = (heights_in.shape[1] + tpg_j - 1) // tpg_j
-    ept = ept_i * ept_j
-    if verbose:
-        print(f"[bpg: {bpg}, tpb: {tpb}, ept: {ept}]")
-    dev_d = cuda.to_device(np.zeros(1, dtype=np.float32))
-    dev_k = cuda.to_device(np.zeros(1, dtype=np.int32))
-    dev_stop_all = cuda.to_device(np.zeros(1, dtype=bool))       
-    sfwf_contraction_cuda_large_gridsyncnew_job[bpg, tpb](dev_h_in, eps, dev_h_out, dev_d, dev_k, dev_stop_all)     
-    heights_out = dev_h_out.copy_to_host()
-    d = dev_d.copy_to_host()[0]
-    k = dev_k.copy_to_host()[0]
-    cuda.synchronize()
-    t2 = time.time()
-    if verbose:
-        print(f"SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNCNEW DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")    
-    return heights_out, d, k, t2 - t1        
-
-@cuda.jit(void(float32[:, :], float32, float32[:, :], float32[:], int32[:], boolean[:]))    
-def sfwf_contraction_cuda_large_gridsyncnew_job(h_in, eps, h_out, d, k, stop_all):           
     shared_h = cuda.shared.array((16 + 2, 16 + 2), dtype=float32) # corresponds to DEFAULT_TPB_SIDE + padding for neighbors' values 
     shared_d = cuda.shared.array(16**2, dtype=float32) # corresponds to DEFAULT_TPB_SIDE**2    
     tj, ti = cuda.threadIdx.x, cuda.threadIdx.y
