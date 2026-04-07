@@ -7,12 +7,12 @@ if __name__ == "__main__":
     device_names = ["i7-10700@2.90GHz", "RTX 3090", "RTX 5090 Blackwell"]
     
     series = [
-        {"sfwf_contraction_cpu_numpy": [0.036, 0.390, 8.066, 114.985, 4281.633]},
+        {"sfwf_contraction_cpu_numpy": [0.038, 0.390, 8.066, 114.985, 4281.633]},
         {        
-            "sfwf_contraction_cuda_large_atomicmax": [0.072, 0.469, 2.224, 2.154, 22.430],
-            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.072, 0.469, 2.214, 2.158, 18.961],
-            "sfwf_contraction_cuda_large_hreducemax": [0.043, 0.283, 1.332, 1.297, 22.808],
-            "sfwf_contraction_cuda_large_hreducemaxgs": [0.044, 0.284, 1.334, 1.306, 22.956],
+            "sfwf_contraction_cuda_large_atomicmax": [0.074, 0.469, 2.224, 2.154, 22.430],
+            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.075, 0.469, 2.214, 2.158, 18.961],
+            "sfwf_contraction_cuda_large_hreducemax": [0.045, 0.283, 1.332, 1.297, 22.808],
+            "sfwf_contraction_cuda_large_hreducemaxgs": [0.045, 0.284, 1.334, 1.306, 22.956],
             "sfwf_contraction_cuda_large_gridsync": [0.008, 0.053, 0.765, 4.301, 79.929]
         },
         {
