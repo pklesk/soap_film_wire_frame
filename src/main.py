@@ -41,6 +41,7 @@ MC_EXAMPLE_PLOT = False
 MC_EXAMPLE_PLOT_SAMPLES = 3 
 APPROACHES_CONTRACTION = { # approaches for contraction iteration
     sfwf.sfwf_contraction_cpu_numpy.__name__: (True, sfwf.sfwf_contraction_cpu_numpy, DEFAULT_REPETITIONS, {}),
+    sfwf.sfwf_contraction_cpu_numpy_blaslike.__name__: (True, sfwf.sfwf_contraction_cpu_numpy_blaslike, DEFAULT_REPETITIONS, {}),    
     sfwf.sfwf_contraction_cpu_numba_parallel.__name__: (True, sfwf.sfwf_contraction_cpu_numba_parallel, DEFAULT_REPETITIONS, {}),
     sfwf.sfwf_contraction_cuda_small.__name__: (False, sfwf.sfwf_contraction_cuda_small, DEFAULT_REPETITIONS, {"tpb": sfwf.DEFAULT_TPB}),
     sfwf.sfwf_contraction_cuda_large_atomicmax.__name__: (True, sfwf.sfwf_contraction_cuda_large_atomicmax, DEFAULT_REPETITIONS, {"lazy_stop_check": sfwf.DEFAULT_LAZY_STOP_CHECK, "tpb_side": sfwf.DEFAULT_TPB_SIDE}),    

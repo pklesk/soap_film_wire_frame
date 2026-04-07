@@ -20,32 +20,7 @@ DEFAULT_CONTRACTION_CUDA_SMALL_SHARED_SIDE = 64
 DEFAULT_CORES = 1024
 DEFAULT_MC_CUDA_TPB = 128
 DEFAULT_MC_CPU_NUMPY_CHUNK_SIZE = 1000 # 1000 (250 for sample plot)
-DEFAULT_MC_CUDA_RPT = 10 # repetitions (walks) per thread (owing to this, fewer random generators can be initialized and CUDA blocks scheduled)                 
-                         
-def sfwf_contraction_cpu_numpy_old(heights_in, eps, verbose=True):
-    if verbose:
-        print(f"SFWF CONTRACTION CPU NUMPY... [eps: {eps}]")
-    t1 = time.time()
-    h = np.copy(heights_in[1:-1, 1:-1]) # inside (no border)
-    k = 0    
-    d = np.inf
-    while True:
-        h_l = np.c_[heights_in[1:-1, 0], h[:, :-1]]
-        h_r = np.c_[h[:, 1:], heights_in[1:-1, -1]]
-        h_t = np.r_[heights_in[0, 1:-1][np.newaxis, :], h[:-1, :]]        
-        h_b = np.r_[h[1:, :], heights_in[-1, 1:-1][np.newaxis, :]]        
-        h_new = 0.25 * (h_t + h_b + h_l + h_r)
-        d = np.max(np.abs(h_new - h))
-        h = h_new
-        k += 1
-        if d <= eps:
-            break        
-    t2 = time.time()
-    heights_out = np.copy(heights_in)
-    heights_out[1:-1, 1:-1] = h
-    if verbose:
-        print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
-    return heights_out, d, k, t2 - t1
+DEFAULT_MC_CUDA_RPT = 10 # repetitions (walks) per thread (owing to this, fewer random generators can be initialized and CUDA blocks scheduled)                                          
 
 def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
     if verbose:
@@ -65,13 +40,40 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
         h[:] = h_new[:] 
         k += 1
         if d <= eps:
-            break        
-    t2 = time.time()
+            break            
     heights_out = np.copy(heights_in)
     heights_out[1:-1, 1:-1] = h
+    t2 = time.time()
     if verbose:
         print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
     return heights_out, d, k, t2 - t1
+
+def sfwf_contraction_cpu_numpy_blaslike(heights_in, eps, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CPU NUMPY BLASLIKE... [eps: {eps}]")
+    t1 = time.time()    
+    h_full = np.copy(heights_in)
+    m, n = h_full.shape    
+    A = np.eye(m, k=-1) + np.eye(m, k=1)
+    B = np.eye(n, k=-1) + np.eye(n, k=1)    
+    A[0, 1] = A[-1, -2] = 0 
+    B[1, 0] = B[-2, -1] = 0
+    k = 0
+    while True:
+        h_new_full = 0.25 * (A @ h_full + h_full @ B)
+        h_new_full[0, :] = heights_in[0, :]
+        h_new_full[-1, :] = heights_in[-1, :]
+        h_new_full[:, 0] = heights_in[:, 0]
+        h_new_full[:, -1] = heights_in[:, -1]        
+        d = np.max(np.abs(h_new_full - h_full))
+        h_full = h_new_full
+        k += 1        
+        if d <= eps: 
+            break
+    t2 = time.time()
+    if verbose:
+        print(f"SFWF CONTRACTION CPU NUMPY BLASLIKE DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")        
+    return h_full, d, k, t2 - t1
 
 def sfwf_contraction_cpu_numba_parallel(heights_in, eps, verbose=True):
     if verbose:
