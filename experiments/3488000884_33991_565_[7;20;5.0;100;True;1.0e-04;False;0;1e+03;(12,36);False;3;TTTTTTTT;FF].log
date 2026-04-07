@@ -1,0 +1,375 @@
+SOAP FILM IN A WIRE FRAME...
+HASH STRING: 3488000884_33991_565_[7;20;5.0;100;True;1.0e-04;False;0;1e+03;(12,36);False;3;TTTTTTTT;FF]
+====================================================================================================================================================================================================================================================
+EXPERIMENT INFO:
+{
+  SEED: 7,
+  WF_FOURIER_N: 20,
+  WF_FOURIER_AMPLITUDE: 5.0,
+  WF_BORDER_N: 100,
+  NUMPY_SINGLE_THREAD: True,
+  CONTRACTION_EPS: 0.0001,
+  CONTRACTION_PLOTS: False,
+  MC_SEED: 0,
+  MC_SAMPLES: 1000,
+  MC_I0_J0: (12, 36),
+  MC_EXAMPLE_PLOT: False,
+  MC_EXAMPLE_PLOT_SAMPLES: 3,
+  sfwf_contraction_cpu_numpy: (True, 'sfwf_contraction_cpu_numpy', 5, {}),
+  sfwf_contraction_cpu_numba_parallel: (True, 'sfwf_contraction_cpu_numba_parallel', 5, {}),
+  sfwf_contraction_cuda_small: (True, 'sfwf_contraction_cuda_small', 5, {'tpb': 512}),
+  sfwf_contraction_cuda_large_atomicmax: (True, 'sfwf_contraction_cuda_large_atomicmax', 5, {'lazy_stop_check': 100, 'tpb_side': 16}),
+  sfwf_contraction_cuda_large_atomicmaxglosten: (True, 'sfwf_contraction_cuda_large_atomicmaxglosten', 5, {'lazy_stop_check': 100, 'tpb_side': 16}),
+  sfwf_contraction_cuda_large_hreducemax: (True, 'sfwf_contraction_cuda_large_hreducemax', 5, {'lazy_stop_check': 100, 'tpb_side': 16, 'tpb_reduce': 512}),
+  sfwf_contraction_cuda_large_hreducemaxgs: (True, 'sfwf_contraction_cuda_large_hreducemaxgs', 5, {'lazy_stop_check': 100, 'tpb_side': 16, 'tpb_reduce': 512, 'cores': 10496}),
+  sfwf_contraction_cuda_large_gridsync: (True, 'sfwf_contraction_cuda_large_gridsync', 5, {'tpb_side': 16}),
+  sfwf_mc_cpu_numpy: (False, 'sfwf_mc_cpu_numpy', 0, {}),
+  sfwf_mc_cuda: (False, 'sfwf_mc_cuda', 0, {})
+}
+====================================================================================================================================================================================================================================================
+CPU AND SYSTEM:
+{'cpu_name': 'Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz',
+ 'os_machine': 'x86_64',
+ 'os_name': 'Linux 6.8.0-106-generic',
+ 'os_version': '#106-Ubuntu SMP PREEMPT_DYNAMIC Fri Mar  6 07:58:08 UTC 2026',
+ 'ram_size': '125.7 GB'}
+GPU:
+{'async_engine_count': 2,
+ 'can_map_host_memory': 1,
+ 'compute_capability': ComputeCapability(major=8, minor=6),
+ 'cores_per_SM': 128,
+ 'cores_total': 10496,
+ 'max_block_dim_x': 1024,
+ 'max_block_dim_y': 1024,
+ 'max_block_dim_z': 64,
+ 'max_grid_dim_x': 2147483647,
+ 'max_grid_dim_y': 65535,
+ 'max_grid_dim_z': 65535,
+ 'max_shared_memory_per_block': 49152,
+ 'max_threads_per_block': 1024,
+ 'multiprocessor_count': 82,
+ 'name': 'NVIDIA GeForce RTX 3090',
+ 'pci_bus_id': 1,
+ 'pci_device_id': 0,
+ 'unified_addressing': 1,
+ 'warp_size': 32}
+====================================================================================================================================================================================================================================================
+RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): 10000
+HEIGHTS IN[:5, :5]:
+[[25.365894 22.23305  18.8149   15.397629 12.257225]
+ [27.940697  0.        0.        0.        0.      ]
+ [29.720734  0.        0.        0.        0.      ]
+ [30.52531   0.        0.        0.        0.      ]
+ [30.24473   0.        0.        0.        0.      ]]
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 1: sfwf_contraction_cpu_numpy...
+---
+REPETITION: 1/5:
+SFWF CONTRACTION CPU NUMPY... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMPY DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.25366735458374023 s]
+---
+REPETITION: 2/5:
+SFWF CONTRACTION CPU NUMPY... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMPY DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.2539377212524414 s]
+---
+REPETITION: 3/5:
+SFWF CONTRACTION CPU NUMPY... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMPY DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.2543210983276367 s]
+---
+REPETITION: 4/5:
+SFWF CONTRACTION CPU NUMPY... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMPY DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.2526521682739258 s]
+---
+REPETITION: 5/5:
+SFWF CONTRACTION CPU NUMPY... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMPY DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.25298094749450684 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894  22.23305   18.8149    15.397629  12.257225 ]
+ [27.940697  23.916712  20.2746    16.968445  14.0749855]
+ [29.720734  25.218504  21.39834   18.126572  15.371559 ]
+ [30.52531   25.838228  21.973686  18.767944  16.134872 ]
+ [30.24473   25.635416  21.890236  18.836649  16.364376 ]]
+D_INF OF HEIGHTS VS REF: 0.0
+D_INF (AT STOP) MEAN: 9.918212890625e-05
+ITERATIONS MEAN: 8365.0
+TIME MEAN: 0.2535118579864502 s, STD: 0.0006134070418847525 s, STD_%: 0.2%
+SPEEDUP VS REF: 1.0
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 2: sfwf_contraction_cpu_numba_parallel...
+---
+REPETITION: 1/5:
+SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMBA PARALLEL. [d_inf: 9.918213e-05, iterations: 8365, time: 0.29334044456481934 s]
+---
+REPETITION: 2/5:
+SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMBA PARALLEL. [d_inf: 9.918213e-05, iterations: 8365, time: 0.2832791805267334 s]
+---
+REPETITION: 3/5:
+SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMBA PARALLEL. [d_inf: 9.918213e-05, iterations: 8365, time: 0.2837519645690918 s]
+---
+REPETITION: 4/5:
+SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMBA PARALLEL. [d_inf: 9.918213e-05, iterations: 8365, time: 0.2845616340637207 s]
+---
+REPETITION: 5/5:
+SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: 0.0001]
+SFWF CONTRACTION CPU NUMBA PARALLEL. [d_inf: 9.918213e-05, iterations: 8365, time: 0.2846498489379883 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894  22.23305   18.8149    15.397629  12.257225 ]
+ [27.940697  23.916712  20.2746    16.968445  14.0749855]
+ [29.720734  25.218504  21.39834   18.126572  15.371559 ]
+ [30.52531   25.838228  21.973686  18.767944  16.134872 ]
+ [30.24473   25.635416  21.890236  18.836649  16.364376 ]]
+D_INF OF HEIGHTS VS REF: 0.0
+D_INF (AT STOP) MEAN: 9.918212890625e-05
+ITERATIONS MEAN: 8365.0
+TIME MEAN: 0.2859166145324707 s, STD: 0.003746883694214052 s, STD_%: 1.3%
+SPEEDUP VS REF: 0.8866636113504331
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 3: sfwf_contraction_cuda_small...
+[skipping this approach (too large WF_BORDER_N)]
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 4: sfwf_contraction_cuda_large_atomicmax...
+---
+REPETITION: 1/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.4421565532684326 s]
+---
+REPETITION: 2/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.4480316638946533 s]
+---
+REPETITION: 3/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.44699931144714355 s]
+---
+REPETITION: 4/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.44672083854675293 s]
+---
+REPETITION: 5/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.44859790802001953 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894 22.23305  18.8149   15.397629 12.257225]
+ [27.940697 23.916716 20.274605 16.968456 14.075   ]
+ [29.720734 25.21851  21.398354 18.126593 15.371587]
+ [30.52531  25.838238 21.973707 18.767975 16.134912]
+ [30.24473  25.63543  21.890263 18.836689 16.364433]]
+D_INF OF HEIGHTS VS REF: 0.0034322739
+D_INF (AT STOP) MEAN: 9.918212890625e-05
+ITERATIONS MEAN: 8400.0
+TIME MEAN: 0.4465012550354004 s, STD: 0.0022764364944369295 s, STD_%: 0.5%
+SPEEDUP VS REF: 0.5677741218585171
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 5: sfwf_contraction_cuda_large_atomicmaxglosten...
+---
+REPETITION: 1/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.44620537757873535 s]
+---
+REPETITION: 2/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.44396233558654785 s]
+---
+REPETITION: 3/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.4468822479248047 s]
+---
+REPETITION: 4/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.44556427001953125 s]
+---
+REPETITION: 5/5:
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (7, 7), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAXGLOSTEN DONE. [d_inf: 9.918213e-05, iterations: 8400, time: 0.44904065132141113 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894 22.23305  18.8149   15.397629 12.257225]
+ [27.940697 23.916716 20.274605 16.968456 14.075   ]
+ [29.720734 25.21851  21.398354 18.126593 15.371587]
+ [30.52531  25.838238 21.973707 18.767975 16.134912]
+ [30.24473  25.63543  21.890263 18.836689 16.364433]]
+D_INF OF HEIGHTS VS REF: 0.0034322739
+D_INF (AT STOP) MEAN: 9.918212890625e-05
+ITERATIONS MEAN: 8400.0
+TIME MEAN: 0.44633097648620607 s, STD: 0.0016649511413065966 s, STD_%: 0.4%
+SPEEDUP VS REF: 0.567990731860586
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 6: sfwf_contraction_cuda_large_hreducemax...
+---
+REPETITION: 1/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAX DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.267594575881958 s]
+---
+REPETITION: 2/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAX DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.2686042785644531 s]
+---
+REPETITION: 3/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAX DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.27138376235961914 s]
+---
+REPETITION: 4/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAX DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.2707560062408447 s]
+---
+REPETITION: 5/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAX... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAX DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.26990652084350586 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894 22.23305  18.8149   15.397629 12.257225]
+ [27.940697 23.916716 20.274605 16.968456 14.075   ]
+ [29.720734 25.21851  21.398354 18.126593 15.371587]
+ [30.52531  25.838238 21.973707 18.767975 16.134912]
+ [30.24473  25.63543  21.890263 18.836689 16.364433]]
+D_INF OF HEIGHTS VS REF: 0.0034322739
+D_INF (AT STOP) MEAN: 9.918212890625e-05
+ITERATIONS MEAN: 8400.0
+TIME MEAN: 0.26964902877807617 s, STD: 0.0013865988300156152 s, STD_%: 0.5%
+SPEEDUP VS REF: 0.9401549085314637
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_hreducemaxgs...
+---
+REPETITION: 1/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAXGS... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512, cores: 10496]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce1 (grid-stride) bpg: 82, tpb: 128]
+[reduce2 bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGS DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.27016639709472656 s]
+---
+REPETITION: 2/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAXGS... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512, cores: 10496]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce1 (grid-stride) bpg: 82, tpb: 128]
+[reduce2 bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGS DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.2713587284088135 s]
+---
+REPETITION: 3/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAXGS... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512, cores: 10496]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce1 (grid-stride) bpg: 82, tpb: 128]
+[reduce2 bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGS DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.2720828056335449 s]
+---
+REPETITION: 4/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAXGS... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512, cores: 10496]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce1 (grid-stride) bpg: 82, tpb: 128]
+[reduce2 bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGS DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.2712974548339844 s]
+---
+REPETITION: 5/5:
+SFWF CONTRACTION CUDA LARGE HREDUCEMAXGS... [eps: 0.0001, lazy_stop_check: 100, tpb_side: 16, tpb_reduce: 512, cores: 10496]
+[job bpg: (7, 7), tpb: (16, 16)]
+[reduce1 (grid-stride) bpg: 82, tpb: 128]
+[reduce2 bpg: 1, tpb: 512]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGS DONE. [d_inf: 9.918213e-05 iterations: 8400, time: 0.2720017433166504 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894 22.23305  18.8149   15.397629 12.257225]
+ [27.940697 23.916716 20.274605 16.968456 14.075   ]
+ [29.720734 25.21851  21.398354 18.126593 15.371587]
+ [30.52531  25.838238 21.973707 18.767975 16.134912]
+ [30.24473  25.63543  21.890263 18.836689 16.364433]]
+D_INF OF HEIGHTS VS REF: 0.0034322739
+D_INF (AT STOP) MEAN: 9.918212890625e-05
+ITERATIONS MEAN: 8400.0
+TIME MEAN: 0.27138142585754393 s, STD: 0.0006871082217097261 s, STD_%: 0.3%
+SPEEDUP VS REF: 0.9341533127603435
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync...
+---
+REPETITION: 1/5:
+SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: 0.0001, tpb_side: 16, assumed max_bpg_gridsync: None]
+[wanted ideal bpg: (7, 7)]
+[discovered max_bpg_gridsync: 82; time: 0.0001995563507080078 s]
+[bpg: (7, 7), tpb: (16, 16), ept: 1]
+SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.054595947265625 s]
+---
+REPETITION: 2/5:
+SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: 0.0001, tpb_side: 16, assumed max_bpg_gridsync: None]
+[wanted ideal bpg: (7, 7)]
+[discovered max_bpg_gridsync: 82; time: 0.00012421607971191406 s]
+[bpg: (7, 7), tpb: (16, 16), ept: 1]
+SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.054290056228637695 s]
+---
+REPETITION: 3/5:
+SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: 0.0001, tpb_side: 16, assumed max_bpg_gridsync: None]
+[wanted ideal bpg: (7, 7)]
+[discovered max_bpg_gridsync: 82; time: 0.00012230873107910156 s]
+[bpg: (7, 7), tpb: (16, 16), ept: 1]
+SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.054277896881103516 s]
+---
+REPETITION: 4/5:
+SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: 0.0001, tpb_side: 16, assumed max_bpg_gridsync: None]
+[wanted ideal bpg: (7, 7)]
+[discovered max_bpg_gridsync: 82; time: 0.000118255615234375 s]
+[bpg: (7, 7), tpb: (16, 16), ept: 1]
+SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.05432939529418945 s]
+---
+REPETITION: 5/5:
+SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: 0.0001, tpb_side: 16, assumed max_bpg_gridsync: None]
+[wanted ideal bpg: (7, 7)]
+[discovered max_bpg_gridsync: 82; time: 0.00010657310485839844 s]
+[bpg: (7, 7), tpb: (16, 16), ept: 1]
+SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: 9.918213e-05, iterations: 8365, time: 0.05307507514953613 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894  22.23305   18.8149    15.397629  12.257225 ]
+ [27.940697  23.916712  20.2746    16.968445  14.0749855]
+ [29.720734  25.218504  21.39834   18.126572  15.371559 ]
+ [30.52531   25.838228  21.973686  18.767944  16.134872 ]
+ [30.24473   25.635416  21.890236  18.836649  16.364376 ]]
+D_INF OF HEIGHTS VS REF: 0.0
+D_INF (AT STOP) MEAN: 9.918212890625e-05
+ITERATIONS MEAN: 8365.0
+TIME MEAN: 0.05411367416381836 s, STD: 0.0005321448293360082 s, STD_%: 1.0%
+SPEEDUP VS REF: 4.684802166990059
+====================================================================================================================================================================================================================================================
+====================================================================================================================================================================================================================================================
+FINAL SUMMARY:
+CONTRACTION ITERATION APPROACH 1: sfwf_contraction_cpu_numpy (REFERENCE) -> MEAN ITERATIONS: 8365.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 0.2535118579864502 s, TIME STD: 0.0006134070418847525 s, STD_%: 0.2%, SPEED-UP: 1.00
+CONTRACTION ITERATION APPROACH 2: sfwf_contraction_cpu_numba_parallel -> MEAN ITERATIONS: 8365.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 0.2859166145324707 s, TIME STD: 0.003746883694214052 s, STD_%: 1.3%, SPEED-UP: 0.89
+CONTRACTION ITERATION APPROACH 3: sfwf_contraction_cuda_small SKIPPED.
+CONTRACTION ITERATION APPROACH 4: sfwf_contraction_cuda_large_atomicmax -> MEAN ITERATIONS: 8400.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 0.4465012550354004 s, TIME STD: 0.0022764364944369295 s, STD_%: 0.5%, SPEED-UP: 0.57
+CONTRACTION ITERATION APPROACH 5: sfwf_contraction_cuda_large_atomicmaxglosten -> MEAN ITERATIONS: 8400.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 0.44633097648620607 s, TIME STD: 0.0016649511413065966 s, STD_%: 0.4%, SPEED-UP: 0.57
+CONTRACTION ITERATION APPROACH 6: sfwf_contraction_cuda_large_hreducemax -> MEAN ITERATIONS: 8400.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 0.26964902877807617 s, TIME STD: 0.0013865988300156152 s, STD_%: 0.5%, SPEED-UP: 0.94
+CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_hreducemaxgs -> MEAN ITERATIONS: 8400.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 0.27138142585754393 s, TIME STD: 0.0006871082217097261 s, STD_%: 0.3%, SPEED-UP: 0.93
+CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync -> MEAN ITERATIONS: 8365.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 0.05411367416381836 s, TIME STD: 0.0005321448293360082 s, STD_%: 1.0%, SPEED-UP: 4.68
+MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy OFF.
+MONTE CARLO APPROACH 2: sfwf_mc_cuda OFF.
+SOAP FILM IN A WIRE FRAME DONE. [hash string: 3488000884_33991_565_[7;20;5.0;100;True;1.0e-04;False;0;1e+03;(12,36);False;3;TTTTTTTT;FF], time: 10.147684335708618]
