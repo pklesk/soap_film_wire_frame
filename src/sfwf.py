@@ -68,10 +68,10 @@ def sfwf_contraction_cpu_numba_parallel(heights_in, eps, verbose=True):
         print(f"SFWF CONTRACTION CPU NUMBA PARALLEL. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
     return h_out, d, k, t2 - t1
 
-@jit(void(float32[:, :], float32[:, :]), nopython=True, parallel=True)
+@jit(void(float32[:, :], float32[:, :]), nopython=True, parallel=True, cache=True)
 def sfwf_contraction_cpu_numba_parallel_job(h_in, h_out):
     for i in prange(1, h_in.shape[0] - 1):
-        for j in prange(1, h_in.shape[1] - 1):
+        for j in range(1, h_in.shape[1] - 1):
             h_out[i, j] = 0.25 * (h_in[i - 1, j] + h_in[i + 1, j] + h_in[i, j - 1] + h_in[i, j + 1])
 
 def sfwf_contraction_cuda_small(heights_in, eps, tpb, verbose=True):
@@ -404,7 +404,7 @@ def sfwf_contraction_cuda_large_hreducemaxgs(heights_in, eps, lazy_stop_check=DE
     tpb_job = (tpb_side, tpb_side)
     bpg_i = (heights_in.shape[0] + tpb_side - 1) // tpb_side
     bpg_j = (heights_in.shape[1] + tpb_side - 1) // tpb_side        
-    bpg = (bpg_i, bpg_j)
+    bpg = (bpg_j, bpg_i)
     bpg_i_j = bpg_i * bpg_j
     tpb_gs = 128 # common choice for grid-stride loops
     bpg_gs = min(max(cores // tpb_gs, 1), tpb_reduce)   
