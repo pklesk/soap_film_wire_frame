@@ -1,0 +1,406 @@
+SOAP FILM IN A WIRE FRAME...
+HASH STRING: 2070303714_31353_565_[7;20;5.0;64;True;1.0e-06;False;0;1e+07;(12,36);False;3;FFFTFFFF;TT]
+====================================================================================================================================================================================================================================================
+EXPERIMENT INFO:
+{
+  SEED: 7,
+  WF_FOURIER_N: 20,
+  WF_FOURIER_AMPLITUDE: 5.0,
+  WF_BORDER_N: 64,
+  NUMPY_SINGLE_THREAD: True,
+  CONTRACTION_EPS: 1e-06,
+  CONTRACTION_PLOTS: False,
+  MC_SEED: 0,
+  MC_SAMPLES: 10000000,
+  MC_I0_J0: (12, 36),
+  MC_EXAMPLE_PLOT: False,
+  MC_EXAMPLE_PLOT_SAMPLES: 3,
+  sfwf_contraction_cpu_numpy: (False, 'sfwf_contraction_cpu_numpy', 0, {}),
+  sfwf_contraction_cpu_numba_parallel: (False, 'sfwf_contraction_cpu_numba_parallel', 0, {}),
+  sfwf_contraction_cuda_small: (False, 'sfwf_contraction_cuda_small', 0, {}),
+  sfwf_contraction_cuda_large_atomicmax: (True, 'sfwf_contraction_cuda_large_atomicmax', 10, {'lazy_stop_check': 100, 'tpb_side': 16}),
+  sfwf_contraction_cuda_large_atomicmaxglosten: (False, 'sfwf_contraction_cuda_large_atomicmaxglosten', 0, {}),
+  sfwf_contraction_cuda_large_hreducemax: (False, 'sfwf_contraction_cuda_large_hreducemax', 0, {}),
+  sfwf_contraction_cuda_large_hreducemaxgs: (False, 'sfwf_contraction_cuda_large_hreducemaxgs', 0, {}),
+  sfwf_contraction_cuda_large_gridsync: (False, 'sfwf_contraction_cuda_large_gridsync', 0, {}),
+  sfwf_mc_cpu_numpy: (True, 'sfwf_mc_cpu_numpy', 10, {'chunk_size': 1000}),
+  sfwf_mc_cuda: (True, 'sfwf_mc_cuda', 10, {'rpt': 10, 'tpb': 128})
+}
+====================================================================================================================================================================================================================================================
+CPU AND SYSTEM:
+{'cpu_name': 'Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz',
+ 'os_machine': 'x86_64',
+ 'os_name': 'Linux 6.8.0-106-generic',
+ 'os_version': '#106-Ubuntu SMP PREEMPT_DYNAMIC Fri Mar  6 07:58:08 UTC 2026',
+ 'ram_size': '125.7 GB'}
+GPU:
+{'async_engine_count': 2,
+ 'can_map_host_memory': 1,
+ 'compute_capability': ComputeCapability(major=8, minor=6),
+ 'cores_per_SM': 128,
+ 'cores_total': 10496,
+ 'max_block_dim_x': 1024,
+ 'max_block_dim_y': 1024,
+ 'max_block_dim_z': 64,
+ 'max_grid_dim_x': 2147483647,
+ 'max_grid_dim_y': 65535,
+ 'max_grid_dim_z': 65535,
+ 'max_shared_memory_per_block': 49152,
+ 'max_threads_per_block': 1024,
+ 'multiprocessor_count': 82,
+ 'name': 'NVIDIA GeForce RTX 3090',
+ 'pci_bus_id': 1,
+ 'pci_device_id': 0,
+ 'unified_addressing': 1,
+ 'warp_size': 32}
+====================================================================================================================================================================================================================================================
+RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): 4096
+HEIGHTS IN[:5, :5]:
+[[25.365894  20.296429  14.925921  10.320204   7.3313727]
+ [29.068245   0.         0.         0.         0.       ]
+ [30.553246   0.         0.         0.         0.       ]
+ [29.360521   0.         0.         0.         0.       ]
+ [25.516117   0.         0.         0.         0.       ]]
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 4: sfwf_contraction_cuda_large_atomicmax...
+---
+REPETITION: 1/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.4966890811920166 s]
+---
+REPETITION: 2/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.4991474151611328 s]
+---
+REPETITION: 3/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.5000290870666504 s]
+---
+REPETITION: 4/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.49989748001098633 s]
+---
+REPETITION: 5/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.4997105598449707 s]
+---
+REPETITION: 6/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.4982643127441406 s]
+---
+REPETITION: 7/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.5007615089416504 s]
+---
+REPETITION: 8/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.5006308555603027 s]
+---
+REPETITION: 9/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.5010669231414795 s]
+---
+REPETITION: 10/10:
+SFWF CONTRACTION CUDA LARGE ATOMICMAX... [eps: 1e-06, lazy_stop_check: 100, tpb_side: 16]
+[bpg: (4, 4), tpb: (16, 16)]
+SFWF CONTRACTION CUDA LARGE ATOMICMAX DONE. [d_inf: 9.536743e-07, iterations: 9400, time: 0.49872493743896484 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894  20.296429  14.925921  10.320204   7.3313727]
+ [29.068245  22.564266  17.283945  13.20249   10.526932 ]
+ [30.553246  23.60845   18.443102  14.678881  12.190558 ]
+ [29.360521  22.873186  18.201136  14.8793745 12.6591   ]
+ [25.516117  20.322641  16.608881  13.978384  12.193586 ]]
+D_INF OF HEIGHTS VS REF: 0.0
+D_INF (AT STOP) MEAN: 9.5367431640625e-07
+ITERATIONS MEAN: 9400.0
+TIME MEAN: 0.4994922161102295 s, STD: 0.0012633434158242887 s, STD_%: 0.3%
+SPEEDUP VS REF: 1.0
+====================================================================================================================================================================================================================================================
+MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy...
+---
+REPETITION: 1/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.054473876953125e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.14984130859375e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.030632019042969e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.030632019042969e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.078315734863281e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.054473876953125e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.1975250244140625e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 9.703636169433594e-05 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.078315734863281e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 9.703636169433594e-05 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 696.6936683654785 s]
+---
+REPETITION: 2/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.054473876953125e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.054473876953125e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.435943603515625e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.054473876953125e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.078315734863281e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.1021575927734375e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.054473876953125e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 0.00010037422180175781 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.078315734863281e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 9.72747802734375e-05 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 697.827623128891 s]
+---
+REPETITION: 3/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.078315734863281e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.030632019042969e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.078315734863281e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.340576171875e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.078315734863281e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.125999450683594e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.1021575927734375e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 9.703636169433594e-05 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.030632019042969e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 9.679794311523438e-05 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 697.1074335575104 s]
+---
+REPETITION: 4/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.078315734863281e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.030632019042969e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.1021575927734375e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.1021575927734375e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.054473876953125e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.1021575927734375e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.1021575927734375e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 9.679794311523438e-05 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.054473876953125e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 9.679794311523438e-05 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 697.8683652877808 s]
+---
+REPETITION: 5/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.1021575927734375e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.1021575927734375e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.364418029785156e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.030632019042969e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.125999450683594e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.125999450683594e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.054473876953125e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 0.00010085105895996094 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.078315734863281e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 9.72747802734375e-05 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 697.030928850174 s]
+---
+REPETITION: 6/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.125999450683594e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.078315734863281e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.14984130859375e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 7.033348083496094e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.078315734863281e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.125999450683594e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.507469177246094e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 9.655952453613281e-05 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.1021575927734375e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 9.775161743164062e-05 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 697.8289620876312 s]
+---
+REPETITION: 7/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.125999450683594e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.030632019042969e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.1021575927734375e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.078315734863281e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.1021575927734375e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.173683166503906e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.078315734863281e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 9.655952453613281e-05 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.1975250244140625e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 0.00010371208190917969 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 701.0956537723541 s]
+---
+REPETITION: 8/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.245208740234375e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.245208740234375e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.340576171875e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.269050598144531e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.269050598144531e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.2928924560546875e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.2928924560546875e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 9.965896606445312e-05 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.269050598144531e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 0.00010037422180175781 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 717.926351070404 s]
+---
+REPETITION: 9/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.269050598144531e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.245208740234375e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.2928924560546875e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.2928924560546875e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.221366882324219e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.316734313964844e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.2928924560546875e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 9.894371032714844e-05 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.221366882324219e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 0.00010514259338378906 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 717.2984254360199 s]
+---
+REPETITION: 10/10:
+SFWF MC CPU NUMPY... [(i, j): (12, 36), n_samples: 1.0e+07, seed: 0, chunk_size: 1000]
+[1000000/10000000: border reached at t: 770, (i, j): (6, 0), h: 12.30428; trajectory time: 5.269050598144531e-05 s]
+[2000000/10000000: border reached at t: 525, (i, j): (8, 63), h: 11.246618; trajectory time: 5.269050598144531e-05 s]
+[3000000/10000000: border reached at t: 470, (i, j): (0, 20), h: -18.33845; trajectory time: 5.2928924560546875e-05 s]
+[4000000/10000000: border reached at t: 146, (i, j): (0, 26), h: -3.8553483; trajectory time: 5.245208740234375e-05 s]
+[5000000/10000000: border reached at t: 504, (i, j): (35, 63), h: 12.219755; trajectory time: 5.269050598144531e-05 s]
+[6000000/10000000: border reached at t: 367, (i, j): (0, 33), h: 16.288551; trajectory time: 5.245208740234375e-05 s]
+[7000000/10000000: border reached at t: 636, (i, j): (0, 30), h: 4.4068646; trajectory time: 5.2928924560546875e-05 s]
+[8000000/10000000: border reached at t: 1311, (i, j): (18, 63), h: 1.5037136; trajectory time: 0.00010061264038085938 s]
+[9000000/10000000: border reached at t: 153, (i, j): (14, 63), h: 12.83231; trajectory time: 5.173683166503906e-05 s]
+[10000000/10000000: border reached at t: 1362, (i, j): (5, 63), h: 16.556221; trajectory time: 9.894371032714844e-05 s]
+SFWF MC CPU NUMPY DONE. [h_mean: 8.197744, T_mean: 751.2580017; time: 715.5991306304932 s]
+***
+SUMMARY:
+COMPARISON OF SINGLE HEIGHT VS REF -> h_mean: 8.197744 VS contraction_ref_heights_out[i0, j0]: 8.203798, ABS DIFF: 6.0539246e-03]
+TIME MEAN: 703.6276542186737 s, STD: 8.806899647470518 s, STD_%: 1.3%
+SPEEDUP VS REF: 1.0
+====================================================================================================================================================================================================================================================
+MONTE CARLO APPROACH 2: sfwf_mc_cuda...
+---
+REPETITION: 1/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.5414903163909912 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.7370390892028809 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.00019407272338867188 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 1.2788212299346924 s, time without generators initalization: 0.7373309135437012 s]
+---
+REPETITION: 2/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.12751412391662598 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.7180526256561279 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.0001709461212158203 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.8458282947540283 s, time without generators initalization: 0.7183141708374023 s]
+---
+REPETITION: 3/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.12673664093017578 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.7322945594787598 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.0001506805419921875 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.8592510223388672 s, time without generators initalization: 0.7325143814086914 s]
+---
+REPETITION: 4/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.1269083023071289 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.738853931427002 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.000164031982421875 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.8659970760345459 s, time without generators initalization: 0.739088773727417 s]
+---
+REPETITION: 5/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.12616968154907227 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.7232294082641602 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.00014901161193847656 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.8496174812316895 s, time without generators initalization: 0.7234477996826172 s]
+---
+REPETITION: 6/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.12699127197265625 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.7176337242126465 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.0001571178436279297 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.844839334487915 s, time without generators initalization: 0.7178480625152588 s]
+---
+REPETITION: 7/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.12667489051818848 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.7432005405426025 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.00016164779663085938 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.8700954914093018 s, time without generators initalization: 0.7434206008911133 s]
+---
+REPETITION: 8/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.12609100341796875 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.7372925281524658 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.00016021728515625 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.8636040687561035 s, time without generators initalization: 0.7375130653381348 s]
+---
+REPETITION: 9/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.12633752822875977 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.7232184410095215 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.00015592575073242188 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.8497686386108398 s, time without generators initalization: 0.7234311103820801 s]
+---
+REPETITION: 10/10:
+SFWF MC CUDA... [(i, j): (12, 36), wanted n_samples: 1.0e+07, seed: 0, rpt: 10, tpb: 128]
+[min_n_generators: 1000000, bpg_walk: 7813]
+[initialization of random generators...]
+[initialization of random generators done; count: 1000064, memory: 15.260 MiB, time: 0.12668871879577637 s]
+[random walks...; bpg_walk: 7813, tpb: 128]
+[random walks done; time: 0.743239164352417 s]
+[mean-reduction...; bpg: 1, tpb: 128]
+[mean-reduction done; time: 0.0001983642578125 s]
+SFWF MC CUDA DONE. [h_mean: 8.205237, T_mean: 750.9337158203125, n_samples de facto: 1.0e+07; time: 0.8701956272125244 s, time without generators initalization: 0.743506908416748 s]
+***
+SUMMARY:
+COMPARISON OF SINGLE HEIGHT VS REF -> h_mean: 8.205237 VS contraction_ref_heights_out[i0, j0]: 8.203798, ABS DIFF: 1.4390945e-03]
+TIME MEAN: 0.7316415786743165 s, STD: 0.009513293285587969 s, STD_%: 1.3%
+SPEEDUP VS REF: 961.7108632530125
+====================================================================================================================================================================================================================================================
+====================================================================================================================================================================================================================================================
+FINAL SUMMARY:
+CONTRACTION ITERATION APPROACH 1: sfwf_contraction_cpu_numpy OFF.
+CONTRACTION ITERATION APPROACH 2: sfwf_contraction_cpu_numba_parallel OFF.
+CONTRACTION ITERATION APPROACH 3: sfwf_contraction_cuda_small OFF.
+CONTRACTION ITERATION APPROACH 4: sfwf_contraction_cuda_large_atomicmax (REFERENCE) -> MEAN ITERATIONS: 9400.0, MEAN D_INF: 9.5367431640625e-07, MEAN TIME: 0.4994922161102295 s, TIME STD: 0.0012633434158242887 s, STD_%: 0.3%, SPEED-UP: 1.00
+CONTRACTION ITERATION APPROACH 5: sfwf_contraction_cuda_large_atomicmaxglosten OFF.
+CONTRACTION ITERATION APPROACH 6: sfwf_contraction_cuda_large_hreducemax OFF.
+CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_hreducemaxgs OFF.
+CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync OFF.
+MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy (REFERENCE) -> MEAN TIME: 703.6276542186737 s, TIME STD: 8.806899647470518 s,  STD_%: 1.3%, SPEED-UP: 1.00
+MONTE CARLO APPROACH 2: sfwf_mc_cuda -> MEAN TIME: 0.7316415786743165 s, TIME STD: 0.009513293285587969 s,  STD_%: 1.3%, SPEED-UP: 961.71
+SOAP FILM IN A WIRE FRAME DONE. [hash string: 2070303714_31353_565_[7;20;5.0;64;True;1.0e-06;False;0;1e+07;(12,36);False;3;FFFTFFFF;TT], time: 7050.3284821510315]
