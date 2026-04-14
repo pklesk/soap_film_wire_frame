@@ -207,4 +207,5 @@ __marimo__/
 
 .project
 .pydevproject
+.settings
 src/__pycache__

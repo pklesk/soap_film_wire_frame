@@ -48,7 +48,7 @@ def sfwf_contraction_cpu_numpy(heights_in, eps, verbose=True):
         print(f"SFWF CONTRACTION CPU NUMPY DONE. [d_inf: {str(d)}, iterations: {k}, time: {t2 - t1} s]")
     return heights_out, d, k, t2 - t1
 
-def sfwf_contraction_cpu_numba_parallel(heights_in, eps, verbose=True):
+def sfwf_contraction_cpu_numba_parallel_old(heights_in, eps, verbose=True):
     if verbose:
         print(f"SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: {eps}]")
     t1 = time.time()
@@ -57,7 +57,7 @@ def sfwf_contraction_cpu_numba_parallel(heights_in, eps, verbose=True):
     h_in = np.copy(heights_in)
     h_out = np.copy(heights_in)
     while True:
-        sfwf_contraction_cpu_numba_parallel_job(h_in, h_out)
+        sfwf_contraction_cpu_numba_parallel_old_job(h_in, h_out)
         d = np.max(np.abs(h_out - h_in))
         k += 1        
         if d <= eps:
@@ -69,10 +69,37 @@ def sfwf_contraction_cpu_numba_parallel(heights_in, eps, verbose=True):
     return h_out, d, k, t2 - t1
 
 @jit(void(float32[:, :], float32[:, :]), nopython=True, parallel=True, cache=True)
-def sfwf_contraction_cpu_numba_parallel_job(h_in, h_out):
+def sfwf_contraction_cpu_numba_parallel_old_job(h_in, h_out):
     for i in prange(1, h_in.shape[0] - 1):
         for j in range(1, h_in.shape[1] - 1):
             h_out[i, j] = 0.25 * (h_in[i - 1, j] + h_in[i + 1, j] + h_in[i, j - 1] + h_in[i, j + 1])
+
+
+def sfwf_contraction_cpu_numba_parallel(heights_in, eps, verbose=True):
+    if verbose:
+        print(f"SFWF CONTRACTION CPU NUMBA PARALLEL... [eps: {eps}]")
+    t1 = time.time()
+    k = np.zeros(1, dtype=np.int32)    
+    d = np.empty(1, dtype=np.float32)
+    h_in = np.copy(heights_in)
+    h_out = np.copy(heights_in)
+    sfwf_contraction_cpu_numba_parallel_job(h_in, h_out, eps, d, k)        
+    t2 = time.time()
+    if verbose:
+        print(f"SFWF CONTRACTION CPU NUMBA PARALLEL. [d_inf: {str(d[0])}, iterations: {k[0]}, time: {t2 - t1} s]")
+    return h_out, d[0], k[0], t2 - t1
+
+@jit(void(float32[:, :], float32[:, :], float32, float32[:], int32[:]), nopython=True, parallel=True, cache=True)
+def sfwf_contraction_cpu_numba_parallel_job(h_in, h_out, eps, d, k):    
+    while True:
+        for i in prange(1, h_in.shape[0] - 1):
+            for j in range(1, h_in.shape[1] - 1):
+                h_out[i, j] = 0.25 * (h_in[i - 1, j] + h_in[i + 1, j] + h_in[i, j - 1] + h_in[i, j + 1])
+        d[0] = np.max(np.abs(h_out - h_in))        
+        k[0] += 1
+        if d[0] <= eps:
+            break
+        h_in, h_out = h_out, h_in # ping-pong        
 
 def sfwf_contraction_cuda_small(heights_in, eps, tpb, verbose=True):
     if verbose:

@@ -25,13 +25,13 @@ g_props = gpu_props()
 
 # global settings                
 FOLDER_EXPERIMENTS = "../experiments/"
-DEFAULT_REPETITIONS = 10
+DEFAULT_REPETITIONS = 3
 
 # experiment settings    
 SEED = 7 # some seeds nice for plots: {6, 7, 15} with WF_FOURIER_N: 20, WF_FOURIER_AMPLITUDE: 5.0  
 WF_FOURIER_N = 20
 WF_FOURIER_AMPLITUDE = 5.0    
-WF_BORDER_N = 100
+WF_BORDER_N = 32
 CONTRACTION_EPS = 1e-4
 CONTRACTION_PLOTS = False
 MC_SEED = 0
