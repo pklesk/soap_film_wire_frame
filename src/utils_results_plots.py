@@ -8,26 +8,26 @@ if __name__ == "__main__":
     
     series = [
         {
-            "sfwf_contraction_cpu_numpy": [0.016, 0.251, 7.010, 71.790, 2_673.176],
-            "sfwf_contraction_cpu_numba_parallel": [0.021, 0.273, 3.671, 87.366, 1_261.296],
+            "sfwf_contraction_cpu_numpy": [0.017, 0.262, 7.054, 71.297, 2_712.149],
+            "sfwf_contraction_cpu_numba_parallel": [0.025, 0.365, 2.664, 10.428, 400.334],
         },
         {
-            "sfwf_contraction_cpu_numpy": [0.007, 0.096, 2.816, 25.573, 1_761.183],
-            "sfwf_contraction_cpu_numba_parallel": [0.011, 0.109, 1.801, 13.957, 935.062],
+            "sfwf_contraction_cpu_numpy": [0.007, 0.097, 2.888, 26.448, 1_770.113],
+            "sfwf_contraction_cpu_numba_parallel": [0.020, 0.163, 1.424, 4.847, 146.057],
         },
         {        
-            "sfwf_contraction_cuda_large_atomicmax": [0.074, 0.452, 2.031, 2.079, 20.139],
-            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.074, 0.453, 2.033, 2.082, 15.269],
-            "sfwf_contraction_cuda_large_hreducemax": [0.045, 0.272, 1.231, 1.262, 19.938],
-            "sfwf_contraction_cuda_large_hreducemaxgs": [0.045, 0.276, 1.234, 1.266, 19.910],
-            "sfwf_contraction_cuda_large_gridsync": [0.008, 0.052, 0.788, 4.158, 75.142]
+            "sfwf_contraction_cuda_large_atomicmax": [0.072, 0.473, 2.055, 2.076, 20.209],
+            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.072, 0.468, 2.065, 2.076, 15.325],
+            "sfwf_contraction_cuda_large_hreducemax": [0.044, 0.283, 1.235, 1.251, 19.960],
+            "sfwf_contraction_cuda_large_hreducemaxgs": [0.045, 0.284, 1.244, 1.250, 19.935],
+            "sfwf_contraction_cuda_large_gridsync": [0.008, 0.052, 0.786, 4.178, 75.746]
         },
         {
-            "sfwf_contraction_cuda_large_atomicmax": [0.025, 0.161, 0.743, 0.734, 5.012],
-            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.025, 0.161, 0.734, 0.733, 4.078],
-            "sfwf_contraction_cuda_large_hreducemax": [0.016, 0.101, 0.459, 0.453, 4.858],
-            "sfwf_contraction_cuda_large_hreducemaxgs": [0.016, 0.102, 0.461, 0.454, 4.853],
-            "sfwf_contraction_cuda_large_gridsync": [0.006, 0.041, 0.334, 0.989, 12.701]            
+            "sfwf_contraction_cuda_large_atomicmax": [0.025, 0.163, 0.737, 0.738, 5.015],
+            "sfwf_contraction_cuda_large_atomicmaxglosten": [0.025, 0.163, 0.741, 0.736, 4.066],
+            "sfwf_contraction_cuda_large_hreducemax": [0.016, 0.101, 0.460, 0.460, 4.861],
+            "sfwf_contraction_cuda_large_hreducemaxgs": [0.016, 0.102, 0.463, 0.459, 4.855],
+            "sfwf_contraction_cuda_large_gridsync": [0.006, 0.041, 0.334, 0.988, 12.724]            
         }
     ]
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
             
             default_color = "black" if i < 2 else "#7f7f7f"
             color = method_colors.get(clean_name, default_color)
-            current_lw = 1.2 if (i == 0 and j == 0) else 1.8
+            current_lw = 1.7 if (i == 0 and j == 0) else 1.7
             current_ms = 7 if (i == 0 and j == 0) else 7
             
             if i == 0:                
