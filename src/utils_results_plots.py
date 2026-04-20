@@ -2,10 +2,8 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     
-    sizes = [32**2, 100**2, 317**2, 1000**2, 3163**2]
-    
-    device_names = ["i7-10700", "Ryzen 9 9950X", "RTX 3090 Ampere", "RTX 5090 Blackwell"]
-    
+    sizes = [32**2, 100**2, 317**2, 1000**2, 3163**2]    
+    device_names = ["i7-10700", "Ryzen 9 9950X", "RTX 3090 Ampere", "RTX 5090 Blackwell"]    
     series = [
         {
             "sfwf_contraction_cpu_numpy": [0.017, 0.262, 7.054, 71.297, 2_712.149],
@@ -57,7 +55,6 @@ if __name__ == "__main__":
     AXIS_LABEL_SIZE = 15.0     
     TITLE_SIZE = 20.0          
     TICK_LABEL_SIZE = 12.0     
-
     COLUMN_SPACING = 1.45
 
     for i, device_dict in enumerate(series):
