@@ -4,7 +4,7 @@ if __name__ == "__main__":
     
     sizes = [32**2, 100**2, 317**2, 1000**2, 3163**2]
     
-    device_names = ["i7-10700", "Ryzen 9 9950X", "RTX 3090", "RTX 5090 Blackwell"]
+    device_names = ["i7-10700", "Ryzen 9 9950X", "RTX 3090 Ampere", "RTX 5090 Blackwell"]
     
     series = [
         {
