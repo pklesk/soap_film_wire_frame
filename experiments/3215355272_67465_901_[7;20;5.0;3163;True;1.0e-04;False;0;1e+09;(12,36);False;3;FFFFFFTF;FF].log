@@ -70,7 +70,7 @@ SFWF CONTRACTION CUDA LARGE HREDUCEMAXGS... [eps: 0.0001, lazy_stop_check: 100, 
 [job bpg: (198, 198), tpb: (16, 16)]
 [reduce1 (grid-stride) bpg: 170, tpb: 128]
 [reduce2 bpg: 1, tpb: 512]
-SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGS DONE. [d_inf: 9.918213e-05 iterations: 71600, time: 6.350011825561523 s]
+SFWF ITERATE CONTRACTION CUDA LARGE HREDUCEMAXGS DONE. [d_inf: 9.918213e-05 iterations: 71600, time: 8.63493013381958 s]
 ***
 SUMMARY:
 HEIGHTS OUT[:5, :5]:
@@ -82,7 +82,7 @@ HEIGHTS OUT[:5, :5]:
 D_INF OF HEIGHTS VS REF: 0.0
 D_INF (AT STOP) MEAN: 9.918212890625e-05
 ITERATIONS MEAN: 71600.0
-TIME MEAN: 6.350011825561523 s, STD: 0.0 s, STD_%: 0.0%
+TIME MEAN: 8.63493013381958 s, STD: 0.0 s, STD_%: 0.0%
 SPEEDUP VS REF: 1.0
 ====================================================================================================================================================================================================================================================
 ====================================================================================================================================================================================================================================================
@@ -93,8 +93,8 @@ CONTRACTION ITERATION APPROACH 3: sfwf_contraction_cuda_small OFF.
 CONTRACTION ITERATION APPROACH 4: sfwf_contraction_cuda_large_atomicmax OFF.
 CONTRACTION ITERATION APPROACH 5: sfwf_contraction_cuda_large_atomicmaxglosten OFF.
 CONTRACTION ITERATION APPROACH 6: sfwf_contraction_cuda_large_hreducemax OFF.
-CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_hreducemaxgs (REFERENCE) -> MEAN ITERATIONS: 71600.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 6.350011825561523 s, TIME STD: 0.0 s, STD_%: 0.0%, SPEED-UP: 1.00
+CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_hreducemaxgs (REFERENCE) -> MEAN ITERATIONS: 71600.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 8.63493013381958 s, TIME STD: 0.0 s, STD_%: 0.0%, SPEED-UP: 1.00
 CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync OFF.
 MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy OFF.
 MONTE CARLO APPROACH 2: sfwf_mc_cuda OFF.
-SOAP FILM IN A WIRE FRAME DONE. [hash string: 3215355272_67465_901_[7;20;5.0;3163;True;1.0e-04;False;0;1e+09;(12,36);False;3;FFFFFFTF;FF], time: 6.4044811725616455]
+SOAP FILM IN A WIRE FRAME DONE. [hash string: 3215355272_67465_901_[7;20;5.0;3163;True;1.0e-04;False;0;1e+09;(12,36);False;3;FFFFFFTF;FF], time: 8.689744234085083]
