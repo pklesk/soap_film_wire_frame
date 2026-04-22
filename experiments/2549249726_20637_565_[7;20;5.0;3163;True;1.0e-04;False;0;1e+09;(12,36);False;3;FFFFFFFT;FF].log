@@ -1,0 +1,99 @@
+SOAP FILM IN A WIRE FRAME...
+HASH STRING: 2549249726_20637_565_[7;20;5.0;3163;True;1.0e-04;False;0;1e+09;(12,36);False;3;FFFFFFFT;FF]
+====================================================================================================================================================================================================================================================
+EXPERIMENT INFO:
+{
+  SEED: 7,
+  WF_FOURIER_N: 20,
+  WF_FOURIER_AMPLITUDE: 5.0,
+  WF_BORDER_N: 3163,
+  NUMPY_SINGLE_THREAD: True,
+  CONTRACTION_EPS: 0.0001,
+  CONTRACTION_PLOTS: False,
+  MC_SEED: 0,
+  MC_SAMPLES: 1000000000,
+  MC_I0_J0: (12, 36),
+  MC_EXAMPLE_PLOT: False,
+  MC_EXAMPLE_PLOT_SAMPLES: 3,
+  sfwf_contraction_cpu_numpy: (False, 'sfwf_contraction_cpu_numpy', 0, {}),
+  sfwf_contraction_cpu_numba_parallel: (False, 'sfwf_contraction_cpu_numba_parallel', 0, {}),
+  sfwf_contraction_cuda_small: (False, 'sfwf_contraction_cuda_small', 0, {}),
+  sfwf_contraction_cuda_large_atomicmax: (False, 'sfwf_contraction_cuda_large_atomicmax', 0, {}),
+  sfwf_contraction_cuda_large_atomicmaxglosten: (False, 'sfwf_contraction_cuda_large_atomicmaxglosten', 0, {}),
+  sfwf_contraction_cuda_large_hreducemax: (False, 'sfwf_contraction_cuda_large_hreducemax', 0, {}),
+  sfwf_contraction_cuda_large_hreducemaxgs: (False, 'sfwf_contraction_cuda_large_hreducemaxgs', 0, {}),
+  sfwf_contraction_cuda_large_gridsync: (True, 'sfwf_contraction_cuda_large_gridsync', 1, {'tpb_side': 16}),
+  sfwf_mc_cpu_numpy: (False, 'sfwf_mc_cpu_numpy', 0, {}),
+  sfwf_mc_cuda: (False, 'sfwf_mc_cuda', 0, {})
+}
+====================================================================================================================================================================================================================================================
+CPU AND SYSTEM:
+{'cpu_name': 'Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz',
+ 'os_machine': 'x86_64',
+ 'os_name': 'Linux 6.8.0-106-generic',
+ 'os_version': '#106-Ubuntu SMP PREEMPT_DYNAMIC Fri Mar  6 07:58:08 UTC 2026',
+ 'ram_size': '125.7 GB'}
+GPU:
+{'async_engine_count': 2,
+ 'can_map_host_memory': 1,
+ 'compute_capability': ComputeCapability(major=8, minor=6),
+ 'cores_per_SM': 128,
+ 'cores_total': 10496,
+ 'max_block_dim_x': 1024,
+ 'max_block_dim_y': 1024,
+ 'max_block_dim_z': 64,
+ 'max_grid_dim_x': 2147483647,
+ 'max_grid_dim_y': 65535,
+ 'max_grid_dim_z': 65535,
+ 'max_shared_memory_per_block': 49152,
+ 'max_threads_per_block': 1024,
+ 'multiprocessor_count': 82,
+ 'name': 'NVIDIA GeForce RTX 3090',
+ 'pci_bus_id': 1,
+ 'pci_device_id': 0,
+ 'unified_addressing': 1,
+ 'warp_size': 32}
+====================================================================================================================================================================================================================================================
+RANDOM WIRE FRAME WITH TOTAL OF POINTS (STATES): 10004569
+HEIGHTS IN[:5, :5]:
+[[25.365894 25.274918 25.1834   25.091347 24.998768]
+ [25.456287  0.        0.        0.        0.      ]
+ [25.546192  0.        0.        0.        0.      ]
+ [25.635464  0.        0.        0.        0.      ]
+ [25.724228  0.        0.        0.        0.      ]]
+====================================================================================================================================================================================================================================================
+CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync...
+---
+REPETITION: 1/1:
+SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: 0.0001, tpb_side: 16, assumed max_bpg_gridsync: None]
+[wanted ideal bpg: (198, 198)]
+[discovered max_bpg_gridsync: 82; time: 0.00042247772216796875 s]
+[bpg: (9, 9), tpb: (16, 16), ept: 484]
+SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: 9.918213e-05, iterations: 71513, time: 350.5862829685211 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894 25.274918 25.1834   25.091347 24.998768]
+ [25.456287 25.361845 25.2674   25.17276  25.077831]
+ [25.546192 25.44877  25.3516   25.254465 25.157232]
+ [25.635464 25.53545  25.435772 25.336267 25.236809]
+ [25.724228 25.621788 25.519772 25.418026 25.316433]]
+D_INF OF HEIGHTS VS REF: 0.0
+D_INF (AT STOP) MEAN: 9.918212890625e-05
+ITERATIONS MEAN: 71513.0
+TIME MEAN: 350.5862829685211 s, STD: 0.0 s, STD_%: 0.0%
+SPEEDUP VS REF: 1.0
+====================================================================================================================================================================================================================================================
+====================================================================================================================================================================================================================================================
+FINAL SUMMARY:
+CONTRACTION ITERATION APPROACH 1: sfwf_contraction_cpu_numpy OFF.
+CONTRACTION ITERATION APPROACH 2: sfwf_contraction_cpu_numba_parallel OFF.
+CONTRACTION ITERATION APPROACH 3: sfwf_contraction_cuda_small OFF.
+CONTRACTION ITERATION APPROACH 4: sfwf_contraction_cuda_large_atomicmax OFF.
+CONTRACTION ITERATION APPROACH 5: sfwf_contraction_cuda_large_atomicmaxglosten OFF.
+CONTRACTION ITERATION APPROACH 6: sfwf_contraction_cuda_large_hreducemax OFF.
+CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_hreducemaxgs OFF.
+CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync (REFERENCE) -> MEAN ITERATIONS: 71513.0, MEAN D_INF: 9.918212890625e-05, MEAN TIME: 350.5862829685211 s, TIME STD: 0.0 s, STD_%: 0.0%, SPEED-UP: 1.00
+MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy OFF.
+MONTE CARLO APPROACH 2: sfwf_mc_cuda OFF.
+SOAP FILM IN A WIRE FRAME DONE. [hash string: 2549249726_20637_565_[7;20;5.0;3163;True;1.0e-04;False;0;1e+09;(12,36);False;3;FFFFFFFT;FF], time: 350.7035758495331]
