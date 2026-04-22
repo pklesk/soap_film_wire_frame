@@ -67,5 +67,33 @@ CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync...
 REPETITION: 1/1:
 SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: 0.0001, tpb_side: 16, assumed max_bpg_gridsync: None]
 [wanted ideal bpg: (63, 63)]
-[discovered max_bpg_gridsync: 82; time: 0.0003864765167236328 s]
+[discovered max_bpg_gridsync: 82; time: 0.00037741661071777344 s]
 [bpg: (9, 9), tpb: (16, 16), ept: 49]
+SFWF ITERATE CONTRACTION CUDA LARGE GRIDSYNC DONE. [d_inf: 9.9658966e-05, iterations: 37329, time: 6.285625457763672 s]
+***
+SUMMARY:
+HEIGHTS OUT[:5, :5]:
+[[25.365894 25.076092 24.781034 24.480982 24.176191]
+ [25.650219 25.33527  25.020832 24.704952 24.386852]
+ [25.928717 25.593943 25.262064 24.931139 24.600048]
+ [26.20127  25.849722 25.502344 25.1575   24.814049]
+ [26.467506 26.101332 25.740093 25.382467 25.027418]]
+D_INF OF HEIGHTS VS REF: 0.0
+D_INF (AT STOP) MEAN: 9.965896606445312e-05
+ITERATIONS MEAN: 37329.0
+TIME MEAN: 6.285625457763672 s, STD: 0.0 s, STD_%: 0.0%
+SPEEDUP VS REF: 1.0
+====================================================================================================================================================================================================================================================
+====================================================================================================================================================================================================================================================
+FINAL SUMMARY:
+CONTRACTION ITERATION APPROACH 1: sfwf_contraction_cpu_numpy OFF.
+CONTRACTION ITERATION APPROACH 2: sfwf_contraction_cpu_numba_parallel OFF.
+CONTRACTION ITERATION APPROACH 3: sfwf_contraction_cuda_small OFF.
+CONTRACTION ITERATION APPROACH 4: sfwf_contraction_cuda_large_atomicmax OFF.
+CONTRACTION ITERATION APPROACH 5: sfwf_contraction_cuda_large_atomicmaxglosten OFF.
+CONTRACTION ITERATION APPROACH 6: sfwf_contraction_cuda_large_hreducemax OFF.
+CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_hreducemaxgs OFF.
+CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync (REFERENCE) -> MEAN ITERATIONS: 37329.0, MEAN D_INF: 9.965896606445312e-05, MEAN TIME: 6.285625457763672 s, TIME STD: 0.0 s, STD_%: 0.0%, SPEED-UP: 1.00
+MONTE CARLO APPROACH 1: sfwf_mc_cpu_numpy OFF.
+MONTE CARLO APPROACH 2: sfwf_mc_cuda OFF.
+SOAP FILM IN A WIRE FRAME DONE. [hash string: 2839726202_94529_565_[7;20;5.0;1000;True;1.0e-04;False;0;1e+09;(12,36);False;3;FFFFFFFT;FF], time: 6.320323467254639]
