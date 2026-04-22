@@ -67,5 +67,5 @@ CONTRACTION ITERATION APPROACH 8: sfwf_contraction_cuda_large_gridsync...
 REPETITION: 1/1:
 SFWF CONTRACTION CUDA LARGE GRIDSYNC... [eps: 0.0001, tpb_side: 16, assumed max_bpg_gridsync: None]
 [wanted ideal bpg: (198, 198)]
-[discovered max_bpg_gridsync: 82; time: 0.00035834312438964844 s]
+[discovered max_bpg_gridsync: 82; time: 0.0003554821014404297 s]
 [bpg: (9, 9), tpb: (16, 16), ept: 484]
