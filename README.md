@@ -11,8 +11,16 @@ Implementations of CUDA kernels have been carried out using Numba - a just-in-ti
 
 
 # Some mathematics
-TODO
+The property of soap surface is that at any point the total force exerted on it is *zero*, or else the point would deflect and the surface would change. 
+If $h(x,y)$ denotes the surface height function, the above conditions imply that the *energy norm* of $h$ must be minimal so that $h$ constitutes 
+the solution surface.
+The energy norm is: 
 
+$\|h\|_E=\displaystyle\iint h dx dy$
+
+
+$\|h\|_E=\sqrt{\int_\Omega|\nabla h(x, y)|^2 dx dy}$
+TODO
 
 # Speed-ups
 TODO
