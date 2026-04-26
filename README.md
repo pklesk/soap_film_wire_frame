@@ -1,4 +1,4 @@
-# CUDA-based contraction iteration for soap film in a wire frame
+# CUDA contraction iteration for soap film in a wire frame
 The repository constitutes a part of research on CUDA computational approaches for algorithms based on contraction mapping theorem due to Banach, a.k.a. the fixed-point theorem.
 
 Imagine a wire frame of irregular shape, forming a closed loop, and a soap film surface spanned within it. The task is to compute the shape of that surface knowing the frame shape.
