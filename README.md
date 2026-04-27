@@ -15,9 +15,9 @@ Implementations of CUDA kernels have been carried out using Numba - a just-in-ti
 
 
 # Selected experimental results (averages over 10 repetitions)
-| no. | approach (design)                               | iters. | d_inf <br/> (eps: 10<sup>-4</sup>)   | mean time [s] | speed-up    | mean time [s] | speed-up    |
+| no. | approach (design)                               | iters.       | d_inf <br/> (eps: 10<sup>-4</sup>)   | mean time [s] | speed-up     | mean time [s] | speed-up     |
 |:----|:------------------------------------------------|:------------:|:------------------------------------:|--------------:|-------------:|--------------:|-------------:|
-|     |                                                 |              |                                      | **(RTX 3090)**| **(RTX 3090)**| **(RTX 5090)**| **(RTX 5090)**|
+|     ||||**RTX 3090**<br/>**(i7-10700 8c/16t)**|**RTX 3090**<br/>**(i7-10700 8c/16t)**|**RTX 5090**<br/>**(Ryzen 9 9950X 16c/32t)**|**RTX 5090**<br/>**(Ryzen 9 9950X 16c/32t)**|
 |     | **problem size: ~10<sup>3</sup>** <br/> (domain grid: 32 $\times$ 32, points: 1 024) |||||||
 | 1   | `sfwf_contraction_cpu_numpy`                    | 1 270        | 9.92 $\cdot$ 10<sup>-5</sup>         | 0.017         | $\times$ 1.0 | 0.007         | $\times$ 2.4 |
 | 2   | `sfwf_contraction_cpu_numba_parallel`           | 1 270        | 9.92 $\cdot$ 10<sup>-5</sup>         | 0.025         | $\times$ 0.7 | 0.020         | $\times$ 0.9 |
