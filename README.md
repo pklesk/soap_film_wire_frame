@@ -62,7 +62,17 @@ Implementations of CUDA kernels have been carried out using Numba - a just-in-ti
 
 
 # Basic usage for default settings
+By launching `python main.py` or `python3 main.py`, one executes 10 repetitions of contraction iteration procedures using all CUDA approaches
+(and one CPU-based appraoch `_cpu_numba_parallel`) for the program's default settings of `WF_BORDER_N = 1000` - a domain with 10<sup>6</sup> points 
+- and  `CONTRACTION_EPS = 1e-4` (approach `_cpu_numpy` is turned off by default for shorter execution time). 
+This produces the following print-out (abbreviated here):
+```bash
 TODO
+... [CPU and GPU properties displayed]
+... [log of computations]
+=======================================================================================================================================
+FINAL SUMMARY:
+```
 
 
 # Configuration and other settings
