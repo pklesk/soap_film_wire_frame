@@ -10,11 +10,11 @@ The repository contains six CUDA implementations of such procedures and two refe
 Implementations of CUDA kernels have been carried out using Numba - a just-in-time compiler for Python. Numba exposes a programming interface closely mirroring the native CUDA C++ API, and translates kernel functions into its internal representation (Numba IR), which is then lowered via the LLVM and NVVM-based pipeline into PTX and finally JIT-compiled into executable machine code.
 
 
-# Speed-ups
+## Speed-ups
 <img src="extras/sfwf_speedups.png"/>
 
 
-# Selected experimental results (averages over 10 repetitions)
+## Selected experimental results (averages over 10 repetitions)
 | no. | approach (design)                               | iters.       | d_inf <br/> (eps: 10<sup>-4</sup>)   | mean time [s] | speed-up     | mean time [s] | speed-up     |
 |:----|:------------------------------------------------|:------------:|:------------------------------------:|--------------:|-------------:|--------------:|-------------:|
 ||||| **RTX 3090**<br/>**(i7-10700 8c/16t)**| **RTX 3090**<br/>**(i7-10700 8c/16t)**| **RTX 5090**<br/>**(Ryzen 9 9950X 16c/32t)**| **RTX 5090**<br/>**(Ryzen 9 9950X 16c/32t)**|
@@ -61,7 +61,7 @@ Implementations of CUDA kernels have been carried out using Numba - a just-in-ti
 | 36  | `sfwf_contraction`<br/>`_cuda_large_gridsync`   | 71_513       | 10.0 $\cdot$ 10<sup>-5</sup>         | 75.746        | $\times$ 35.8 | 12.724       | $\times$ 213.2|
 
 
-# Basic usage for default settings
+## Basic usage for default settings
 By launching `python main.py` or `python3 main.py`, one executes 10 repetitions of contraction iteration procedures for the soap surface problem using all CUDA approaches
 (and one CPU-based approach `_cpu_numba_parallel`) for the program's default settings of `WF_BORDER_N = 1000` - a domain with $10^6$ points - and 
 `CONTRACTION_EPS = 1e-4` (approach `_cpu_numpy` is turned off by default for shorter execution time). 
@@ -110,7 +110,7 @@ CONTRACTION ITERATION APPROACH 7: sfwf_contraction_cuda_large_hreducemaxgs -> ME
 ```
 
 
-# Configuration and other settings
+## Configuration and other settings
 For other executions, one can re-edit the settings in `src/main.py`:
 ```python
 # experiment settings    
@@ -137,5 +137,5 @@ APPROACHES_CONTRACTION = { # approaches for contraction iteration
 ```
 
 
-# Acknowledgements
+## Acknowledgements
 - [Numba](https://numba.pydata.org): a high-performance just-in-time Python compiler.
